@@ -5,7 +5,7 @@ import { GLOBAL_STYLES } from "../styles/globalStyles";
 
 export default function ProductosScreen() {
     return (
-        <Layout title="Productos">
+        <Layout titulo="Productos">
             <Text style = {GLOBAL_STYLES.text}>Pantalla de Productos</Text>
         </Layout>
     );
