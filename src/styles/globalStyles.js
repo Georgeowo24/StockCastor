@@ -4,17 +4,25 @@ export const COLORS = {
     primary: '#007AFF',
     secondary: '#5FC9B4',
     background: '#F9FAFB',
+    green: '#34C759',
     text: '#111827',
     gray: '#6B7280',
     white: '#FFFFFF',
+    warning1: '#FF9500',
+    warning2: '#FFF9E6',
+    danger1: '#DC2626',
+    danger2: '#FEF2F2',
+    success1: '#10B981',
+    success2: '#ECFDF5'
 };
 
 export const SIZES = {
     base: 8,
     small: 12,
+    sMedium: 14,
     medium: 16,
-    large: 22,
-    xlarge: 28,
+    large: 18,
+    xlarge: 30,
 };
 
 export const FONTS = {
@@ -30,32 +38,27 @@ export const FONTS = {
         fontWeight: '700',
         fontSize: SIZES.xlarge,
         color: COLORS.text,
-        marginBottom: 20,
+        marginBottom: 5,
     },
     subtitle: {
         fontFamily: 'System',
         fontSize: SIZES.large,
-        color: COLORS.gray,
-        marginBottom: 15,
+        color: COLORS.text,
+        marginBottom: 5,
+        fontWeight: 'bold',
     },
+    priceGreen: { 
+        fontFamily: 'System',
+        fontSize: SIZES.xlarge,
+        color: COLORS.green,
+        marginBottom: 10,
+        fontWeight: 'bold',
+    }
 };
 
 export const GLOBAL_STYLES = StyleSheet.create({
     title: FONTS.title,
-    text: FONTS.regular,
     subtitle: FONTS.subtitle,
+    textS: FONTS.sMedium,
+    text: FONTS.regular,
 });
-
-export const LAYOUT = StyleSheet.create({
-    wrapper: { 
-        flex: 1,
-        backgroundColor: '#F9FAFB',
-    },
-    container: {
-        flexGrow: 1, 
-        paddingHorizontal: 20,
-        paddingVertical: 50,
-        paddingBottom: 120,
-    },
-    title: FONTS.title,
- });

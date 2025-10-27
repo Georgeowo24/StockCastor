@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, StatusBar, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from './src/styles/globalStyles';
 
-// TabNavigator
+// Pantallas
 import InicioScreen from './src/screens/inicio';
 import ProductosScreen from './src/screens/productos';
 import VentasScreen from './src/screens/ventas';
@@ -18,37 +18,27 @@ function TabNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarShowLabel: true, 
+        tabBarShowLabel: true,
         tabBarLabelStyle: { fontSize: 11, marginBottom: 5 },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: 'gray',
-
-        // Estilos de la barra flotante
-        tabBarStyle: { 
+        tabBarStyle: {
           position: 'absolute',
           bottom: 45,
           marginHorizontal: 10,
           backgroundColor: COLORS.white,
-          borderRadius: 25, 
-          height: 65, 
-          paddingBottom: 0, 
+          borderRadius: 25,
+          height: 65,
+          paddingBottom: 0,
           paddingTop: 5,
           ...styles.shadow,
         },
-        
-        // Definición del ícono
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ focused }) => {
           let iconName;
-
-          if (route.name === 'Inicio') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Productos') {
-            iconName = focused ? 'pricetag' : 'pricetag-outline';
-          } else if (route.name === 'Ventas') {
-            iconName = focused ? 'cart' : 'cart-outline';
-          } else if (route.name === 'Apartados') {
-            iconName = focused ? 'bookmark' : 'bookmark-outline';
-          }
+          if (route.name === 'Inicio') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Productos') iconName = focused ? 'pricetag' : 'pricetag-outline';
+          else if (route.name === 'Ventas') iconName = focused ? 'cart' : 'cart-outline';
+          else if (route.name === 'Apartados') iconName = focused ? 'bookmark' : 'bookmark-outline';
           return <Ionicons name={iconName} size={focused ? 30 : 28} color={COLORS.primary} />;
         },
       })}
@@ -61,22 +51,33 @@ function TabNavigator() {
   );
 }
 
-
 export default function App() {
   return (
-    <NavigationContainer>
-      <TabNavigator />
-      <StatusBar style="auto" /> 
-    </NavigationContainer>
+    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={COLORS.background}
+        translucent={false}
+      />
+
+      {/* Fondo sólido debajo del status bar (para MIUI / Android) */}
+      {Platform.OS === "android" && (
+        <View style={{ height: StatusBar.currentHeight, backgroundColor: COLORS.background }} />
+      )}
+
+      <NavigationContainer>
+        <TabNavigator />
+      </NavigationContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   shadow: {
-    shadowColor: '#000', 
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15, 
-    shadowRadius: 10, 
-    elevation: 8, 
-  }
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
+  },
 });

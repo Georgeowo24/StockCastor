@@ -1,23 +1,52 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Layout from "./layout";
-import { FONTS, GLOBAL_STYLES } from "../styles/globalStyles";
+import { GLOBAL_STYLES, SIZES } from "../styles/globalStyles";
+
+// Componentes
+import { AlertaStock } from "../components/Inicio/alertaStock";
+import { CardPedidos } from "../components/Inicio/cardPedidos";
+import { CardVentas } from "../components/Inicio/cardVentas"
+import { GraficaSemanal } from "../components/Inicio/graficaSemanal";
+import { ProductoEstrella } from "../components/Inicio/productoEstrella";
 
 export default function InicioScreen() {
     return (
-        <Layout title="Inicio">
-            <Text style={FONTS.regular}>
-                Bienvenido a la pantalla de inicio.  
-                Aquí puedes mostrar un resumen, botones o componentes.
+        <Layout titulo="Inicio">
+            <Text style={GLOBAL_STYLES.text}>
+                Bienvenido al sistema Stock Castor.  
             </Text>
 
-            <Text style={FONTS.regular}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Text>
+            {/* Alertas */}
+            <AlertaStock 
+                type={'success'}
+                title={'Stock OK'}
+                description={'Todos los productos tienen niveles de stock saludables. ¡Buen trabajo!'}
+            />
+
+            {/* Cards */}
+            <View style={styles.container}>
+                <CardVentas 
+                    ventas={100.50}
+                />
+                <CardPedidos
+                    pedidos={8}
+                />
+            </View>
+
+            <View style={{ marginTop: 20 }}>
+                <GraficaSemanal />
+
+                <ProductoEstrella nombre="Omnitrix" unidades={80}/>
+            </View>
         </Layout>
     );
 }
+
+const styles = StyleSheet.create({ 
+    container: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: SIZES.large,
+    },
+});

@@ -5,7 +5,7 @@ import Layout from "./layout";
 
 export default function ApartadosScreen() {
     return (
-        <Layout title="Apartados">
+        <Layout titulo="Apartados">
             <Text style={GLOBAL_STYLES.text}>Pantalla de Apartados</Text>
         </Layout>
     );
