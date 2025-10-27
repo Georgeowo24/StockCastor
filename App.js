@@ -1,84 +1,82 @@
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { use, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from './src/styles/globalStyles';
 
-import { openDatabase } from './src/database/openDB'; 
-import { initDatabase } from './src/database/initTables';
-import { createIndexes } from './src/database/createIndexes';
-import { createViews } from './src/database/CreateViews';
+// TabNavigator
+import InicioScreen from './src/screens/inicio';
+import ProductosScreen from './src/screens/productos';
+import VentasScreen from './src/screens/ventas';
+import ApartadosScreen from './src/screens/apartados';
+
+const Tab = createBottomTabNavigator();
+
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarShowLabel: true, 
+        tabBarLabelStyle: { fontSize: 11, marginBottom: 5 },
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: 'gray',
+
+        // Estilos de la barra flotante
+        tabBarStyle: { 
+          position: 'absolute',
+          bottom: 45,
+          marginHorizontal: 10,
+          backgroundColor: COLORS.white,
+          borderRadius: 25, 
+          height: 65, 
+          paddingBottom: 0, 
+          paddingTop: 5,
+          ...styles.shadow,
+        },
+        
+        // Definición del ícono
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Inicio') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Productos') {
+            iconName = focused ? 'pricetag' : 'pricetag-outline';
+          } else if (route.name === 'Ventas') {
+            iconName = focused ? 'cart' : 'cart-outline';
+          } else if (route.name === 'Apartados') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
+          }
+          return <Ionicons name={iconName} size={focused ? 30 : 28} color={COLORS.primary} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Inicio" component={InicioScreen} />
+      <Tab.Screen name="Productos" component={ProductosScreen} />
+      <Tab.Screen name="Ventas" component={VentasScreen} />
+      <Tab.Screen name="Apartados" component={ApartadosScreen} />
+    </Tab.Navigator>
+  );
+}
+
 
 export default function App() {
-  const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
-
-  useEffect(() => {
-    async function setupDatabase() {
-      try {
-        console.log('📂 Abriendo base de datos...');
-        const db = await openDatabase();
-
-        console.log('⚙️ Inicializando tablas...');
-        await initDatabase(db);
-        
-        console.log('Creando indices...'); 
-        await createIndexes(db);
-
-        console.log('Creando vistas...');
-        await createViews(db);
-
-        console.log('✅ Todas las tablas fueron creadas correctamente');
-        setStatus('success');
-      } catch (error) {
-        console.error('❌ Error al crear tablas:', error);
-        setStatus('error');
-      }
-    }
-
-    setupDatabase();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      {status === 'loading' && (
-        <>
-          <ActivityIndicator size="large" color="#007bff" />
-          <Text style={styles.text}>Creando tablas en la base de datos...</Text>
-        </>
-      )}
-
-      {status === 'success' && (
-        <Text style={[styles.text, styles.success]}>
-          ✅ Base de datos inicializada correctamente
-        </Text>
-      )}
-
-      {status === 'error' && (
-        <Text style={[styles.text, styles.error]}>
-          ❌ Error al inicializar la base de datos. Revisa la consola.
-        </Text>
-      )}
-    </View>
+    <NavigationContainer>
+      <TabNavigator />
+      <StatusBar style="auto" /> 
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    padding: 20,
-  },
-  text: {
-    marginTop: 15,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  success: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
+  shadow: {
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15, 
+    shadowRadius: 10, 
+    elevation: 8, 
+  }
 });
