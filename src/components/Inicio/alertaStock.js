@@ -83,11 +83,11 @@ const ALERT_STYLES = StyleSheet.create ({
         flexDirection: 'row',
         padding: 15,
         paddingLeft: 20, 
-        alignItems: 'flex-start',
+        alignItems: 'center',
     },
     alertIcon: {
         marginRight: 10,
-        paddingTop: 2,
+        alignSelf: 'center',
     },
     alertTextBox: {
         flex: 1,

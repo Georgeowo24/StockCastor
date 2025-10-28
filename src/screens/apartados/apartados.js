@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { GLOBAL_STYLES } from "../styles/globalStyles";
-import Layout from "./layout";
+import Layout from "../layout";
+import { GLOBAL_STYLES } from "../../styles/globalStyles";
+
 
 export default function ApartadosScreen() {
     return (
