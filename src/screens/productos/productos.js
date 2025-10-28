@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, StyleSheet, View } from "react-native";
 import Layout from "../layout";
 import { GLOBAL_STYLES } from "../../styles/globalStyles";
 import CategoriasProductos from "../../components/productos/categoriasProductos";
-import PrimaryButton from "../../components/buttton";
+import GlobalButton from "../../components/buttton";
 
 export default function ProductosScreen() {
     return (
@@ -11,15 +11,16 @@ export default function ProductosScreen() {
             <Text style = {GLOBAL_STYLES.text}>Consulta y administra tu inventario.</Text>
 
             <View style={styles.container}>
-                <PrimaryButton
-                    text={'Holiwis 1'}
-                    screen={'Inicio'}
+                <GlobalButton
+                    text={'Añadir Productos'}
+                    screen={'NuevoProducto'}
                     style={{ flex: 1, marginHorizontal: 6 }}
                 />
-                <PrimaryButton
-                    text={'Holiwis 2'}
-                    screen={'Inicio'}
+                <GlobalButton
+                    text={'Añadir Categorias'}
+                    screen={'NuevaCategoria'}
                     style={{ flex: 1, marginHorizontal: 6 }}
+                    color={"warning1"}
                 />
             </View>
 
