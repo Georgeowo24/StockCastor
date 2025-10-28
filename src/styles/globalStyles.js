@@ -19,7 +19,6 @@ export const COLORS = {
 export const SIZES = {
     base: 8,
     small: 12,
-    sMedium: 14,
     medium: 16,
     large: 18,
     xlarge: 30,
@@ -47,12 +46,10 @@ export const FONTS = {
         marginBottom: 5,
         fontWeight: 'bold',
     },
-    priceGreen: { 
-        fontFamily: 'System',
-        fontSize: SIZES.xlarge,
-        color: COLORS.green,
-        marginBottom: 10,
-        fontWeight: 'bold',
+    buttonWhite: {
+        fontSize: SIZES.large, 
+        fontWeight: 'bold', 
+        color: '#FFFFFF'
     }
 };
 
@@ -61,4 +58,5 @@ export const GLOBAL_STYLES = StyleSheet.create({
     subtitle: FONTS.subtitle,
     textS: FONTS.sMedium,
     text: FONTS.regular,
+    textButtonWhite: FONTS.buttonWhite
 });

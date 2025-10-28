@@ -7,9 +7,9 @@ import { COLORS } from './src/styles/globalStyles';
 
 // Pantallas
 import InicioScreen from './src/screens/inicio';
-import ProductosScreen from './src/screens/productos';
-import VentasScreen from './src/screens/ventas';
-import ApartadosScreen from './src/screens/apartados';
+import ProductosScreen from './src/screens/productos/productos';
+import VentasScreen from './src/screens/ventas/ventas';
+import ApartadosScreen from './src/screens/apartados/apartados';
 
 const Tab = createBottomTabNavigator();
 
