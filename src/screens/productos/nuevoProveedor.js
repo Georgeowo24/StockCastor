@@ -4,41 +4,54 @@ import Layout from "../layout";
 import GlobalButton from "../../components/buttton";
 import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles";
 
-export default function NuevaCategoria() {
+export default function NuevoProveedor() {
+
     const [formData, setFormData] = useState({
         nombre: "",
-        descripcion: "",
+        telefono: "",
+        direccion: "",
     });
 
     const handleChange = (key, value) => {
         setFormData({ ...formData, [key]: value });
     };
-
+    
     return (
-        <Layout titulo={"Nueva Categoría"}>
-            {/* //? Nombre de la categoría */}
+        <Layout titulo={'Nuevo Proveedor'}>
+            {/* //? Nombre del proveedor */}
             <Text style={GLOBAL_STYLES.subtitle}>Nombre</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Ingrese el nombre de la categoría"
+                placeholder="Juan J."
                 value={formData.nombre}
                 onChangeText={(text) => handleChange("nombre", text)}
             />
-
-            {/* //? Descripción */}
-            <Text style={GLOBAL_STYLES.subtitle}>Descripción</Text>
+            
+            {/* //? Stock actual */}
+            <Text style={GLOBAL_STYLES.subtitle}>Telefono</Text>
             <TextInput
-                style={[styles.input, { height: 80 }]}
-                multiline
-                placeholder="Describe la categoría"
-                value={formData.descripcion}
-                onChangeText={(text) => handleChange("descripcion", text)}
+                style={styles.input}
+                placeholder="222 222 2222"
+                keyboardType="numeric"
+                value={formData.telefono}
+                maxLength={10}
+                onChangeText={(text) => handleChange("telefono", text)}
             />
+
+            {/* //? Dirección del proveedor */}
+            <Text style={GLOBAL_STYLES.subtitle}>Dirección</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Calle X, Col. Bosques, #00000"
+                value={formData.direccion}
+                onChangeText={(text) => handleChange("direccion", text)}
+            />
+
 
             {/* //* Botón Guardar */}
             <View style={{ marginTop: 20 }}>
                 <GlobalButton
-                    text={"Añadir nueva categoría"}
+                    text={"Añadir nuevo Proveedor"}
                     screen={"ProductosMain"}
                 />
             </View>

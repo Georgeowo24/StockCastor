@@ -12,17 +12,22 @@ export default function ProductosScreen() {
 
             <View style={styles.container}>
                 <GlobalButton
-                    text={'Añadir Productos'}
-                    screen={'NuevoProducto'}
+                    text={'Añadir Proveedor'}
+                    screen={'NuevoProveedor'}
                     style={{ flex: 1, marginHorizontal: 6 }}
+                    color="success1"
                 />
                 <GlobalButton
-                    text={'Añadir Categorias'}
+                    text={'Añadir Categoria'}
                     screen={'NuevaCategoria'}
                     style={{ flex: 1, marginHorizontal: 6 }}
-                    color={"warning1"}
+                    color="warning1"
                 />
             </View>
+            <GlobalButton
+                text={'Añadir Producto'}
+                screen={'NuevoProducto'}
+            />
 
             <CategoriasProductos
                 categoria={'Kessoku Band'}
