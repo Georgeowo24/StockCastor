@@ -4,11 +4,11 @@
     "slug": "StockCastor",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/silksong.png",
+    "icon": "./assets/StockCastor.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/silksong.png",
+      "image": "./assets/StockCastor.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

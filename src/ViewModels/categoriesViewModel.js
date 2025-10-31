@@ -25,24 +25,34 @@ export const useCategoriesViewModel = ()=>{
     };
 
     const handleAddCategory = async(infoCategory) =>{
-        if (!infoCategory.nombrCategoria){
-            setError("Datos inválidos");
-            return;
+        if (!infoCategory.nombreCategoria){
+            const invalidError = new Error("El nombre de la categoría es obligatorio.");
+            setError(invalidError.message);
+            throw invalidError;
         }
+        
         try {
-            await CategoriesRepository.addCategory(infoCategory.nombrCategoria,infoCategory.descripcion)
+            await CategoriesRepository.addCategory(infoCategory.nombreCategoria, infoCategory.descripcion);
+            setError(null);
+
         } catch (error) {
+            if (error.message && error.message.includes('UNIQUE constraint failed')) {
+                const duplicateError = new Error("Esa categoría ya existe. Use un nombre diferente.");
+                setError(duplicateError.message); 
+                throw duplicateError; 
+            }
             setError(error.message);
+            throw error; 
         }
     }
 
     const handleEditCategory = async(infoCategory) =>{
-        if (!infoCategory.nombrCategoria || !infoCategory.idCategoria){
+        if (!infoCategory.nombreCategoria || !infoCategory.idCategoria){
             setError("Datos inválidos");
             return;
         }
         try {
-            await CategoriesRepository.editCategory(infoCategory.idCategoria,infoCategory.nombrCategoria,infoCategory.descripcion)
+            await CategoriesRepository.editCategory(infoCategory.idCategoria,infoCategory.nombreCategoria,infoCategory.descripcion)
         } catch (error) {
             setError(error.message);
         }

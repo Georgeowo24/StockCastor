@@ -1,8 +1,8 @@
-// useProductViewModel.js
 import { useState, useEffect } from 'react';
 import * as ProductRepository from '../repositories/ProductRepository';
-import * as ImageService from '../handlers/fileService'; // <-- Importa el servicio
+import * as ImageService from '../handlers/fileService'; 
 import * as ImagePicker from 'expo-image-picker';
+import * as MeasuresRepository from '../repositories/MeasuresRepository'
 
 
 export const useProductViewModel = () => {
@@ -11,10 +11,32 @@ export const useProductViewModel = () => {
     const [error, setError] = useState(null);
     const [selectedImageUri, setSelectedImageUri] = useState(null);
 
+    // Nuevo estado para las medidas
+    const [measures, setMeasures] = useState([]);
+    const [isLoadingMeasures, setIsLoadingMeasures] = useState(false);
+
     // Cargar productos al iniciar
     useEffect(() => {
         loadAllProductsByCategory();
     }, []);
+
+    // Nueva función para cargar medidas basadas en la categoría
+    const loadMeasuresForCategory = async (idCategoria) => {
+        if (!idCategoria) {
+            setMeasures([]);
+            return;
+        }
+        setIsLoadingMeasures(true);
+        setError(null);
+        try {
+            const data = await MeasuresRepository.getSelectMeasures(idCategoria)
+            setMeasures(data);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setIsLoadingMeasures(false);
+        }
+    };
 
     // Lógica de negocios: Cargar productos
     const loadAllProducts = async () => {
@@ -96,18 +118,20 @@ export const useProductViewModel = () => {
 
         if (selectedImageUri) {
             permanentUrl = await ImageService.saveImage(selectedImageUri);
+            console.log('HoliwisImg');
         }
 
-        if (!infoProduct.idCategoria ||infoProduct.idProveedor || !infoProduct.nombreProducto
-            || !infoProduct.descripcion || infoProduct.precioCompra < 0 || infoProduct.precioVenta < 0
-            || infoProduct.stockActual < 0 || infoProduct.stockMinimo < 0 || !infoProduct.idMedida
+        if (
+            !infoProduct.idCategoria || !infoProduct.nombreProducto || !infoProduct.descripcion 
+            || infoProduct.precioCompra < 0 || infoProduct.precioVenta < 0 || infoProduct.stockActual < 0 
+            || infoProduct.stockMinimo < 0 || !infoProduct.idMedida
         ) {
             setError('Datos inválidos');
+            console.log('HoliwisError');
             return;
         }
         
         try {
-
             await ProductRepository.addProduct(
                 infoProduct.idCategoria, infoProduct.idProveedor, infoProduct.nombreProducto,
                 permanentUrl,infoProduct.descripcion,infoProduct.precioCompra,infoProduct.precioVenta,
@@ -115,6 +139,7 @@ export const useProductViewModel = () => {
             );
             setSelectedImageUri(null);
             await loadAllProducts(); // Recargar la lista (Implementa Observer )
+            console.log('HoliwisAñadido');
         } catch (e) {
             setError(e.message);
         }
@@ -128,7 +153,7 @@ export const useProductViewModel = () => {
             permanentUrl = await ImageService.saveImage(selectedImageUri);
         }
 
-        if (!infoProduct.idProducto || !infoProduct.idCategoria ||infoProduct.idProveedor || !infoProduct.nombreProducto
+        if (!infoProduct.idProducto || !infoProduct.idCategoria || !infoProduct.idProveedor || !infoProduct.nombreProducto
             || !infoProduct.descripcion || infoProduct.precioCompra < 0 || infoProduct.precioVenta < 0
             || infoProduct.stockActual < 0 || infoProduct.stockMinimo < 0 || !infoProduct.idMedida
         ) {
@@ -185,5 +210,9 @@ export const useProductViewModel = () => {
         pickImage,
         selectedImageUri, // La vista usa esto para mostrar la previsualización
         setSelectedImageUri, // Para limpiar el formulario
+
+        measures,
+        isLoadingMeasures,
+        loadMeasuresForCategory,
     };
 };

@@ -1,146 +1,217 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Layout from "../layout";
-import GlobalButton from "../../components/buttton";
-import { GLOBAL_STYLES, SIZES, COLORS } from "../../styles/globalStyles";
-import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from "react-native-image-picker";
+import GlobalButton from "../../components/buttton"; 
+import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles"; 
+import { useNavigation } from "@react-navigation/native";
+import { Picker } from '@react-native-picker/picker';
+
+// ViewModels
+import { useProductViewModel } from "../../ViewModels/productViewModel";
+import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
+import { useProvidersViewModel } from "../../ViewModels/providersViewModel";
 
 export default function NuevoProducto() {
+    const navigation = useNavigation();
+    const { handleAddProduct, pickImage, selectedImageUri, setSelectedImageUri, isLoading,  measures, isLoadingMeasures, loadMeasuresForCategory } = useProductViewModel();
+
+    // ViewModels para las listas
+    const { categories, isLoading: isLoadingCategories } = useCategoriesViewModel();
+    const { providers, isLoading: isLoadingProviders } = useProvidersViewModel();
+
     const [formData, setFormData] = useState({
-        categoria: "",
-        nombre: "",
-        imagen: "",
+        idCategoria: null, 
+        idProveedor: null,
+        idMedida: null,
+        nombreProducto: "",
         descripcion: "",
         precioCompra: "",
         precioVenta: "",
-        stockActual: "",
-        stockMinimo: "",
-        medida: "",
+        stockActual: "0",
+        stockMinimo: "0",
     });
 
-    const medidas = ["XS", "S", "M", "L", "XL", "S/M"];
-    const categorias = ["Ropa", "Electrónica", "Hogar", "Juguetes", "Otros"];
+    useEffect(() => {
+        if (formData.idCategoria) {
+            loadMeasuresForCategory(formData.idCategoria);
+        } else {
+            loadMeasuresForCategory(null);
+        }
+        setFormData(prev => ({ ...prev, idMedida: null }));
+    }, [formData.idCategoria]);
 
     const handleChange = (key, value) => {
         setFormData({ ...formData, [key]: value });
     };
+    
+    const handleSave = async () => {
+        if (!formData.nombreProducto || !formData.precioVenta || !formData.idCategoria) {
+            alert("El nombre, precio de venta y categoría son obligatorios.");
+            return;
+        }
 
-    const handleSelectImage = () => {
-        ImagePicker.launchImageLibrary(
-            { mediaType: "photo", selectionLimit: 1 },
-            (response) => {
-                if (!response.didCancel && !response.errorCode && response.assets?.length) {
-                    handleChange("imagen", response.assets[0].uri);
-                }
-            }
-        );
+        const productData = {
+            ...formData,
+            precioCompra: parseFloat(formData.precioCompra) || 0,
+            precioVenta: parseFloat(formData.precioVenta) || 0,
+            stockActual: parseInt(formData.stockActual) || 0,
+            stockMinimo: parseInt(formData.stockMinimo) || 0,
+        };
+
+        try {
+            // Guardar el producto
+            await handleAddProduct(productData);
+            
+            alert("Producto añadido con éxito");
+            setSelectedImageUri(null); // Limpiamos la imagen
+            navigation.goBack();
+        } catch (e) {
+            console.error(e);
+            alert("Error al guardar el producto: " + e.message);
+        }
     };
 
     return (
-        <Layout titulo={"Nuevo Producto"}>
-            {/* //?  Categoría */}
-            <Text style={GLOBAL_STYLES.subtitle}>Categoría</Text>
-
-            <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={formData.categoria}
-                    onValueChange={(itemValue) => handleChange("categoria", itemValue)}
-                >
-                    <Picker.Item label="Selecciona una categoría" value="" />
-                        {categorias.map((cat) => (
-                            <Picker.Item key={cat} label={cat} value={cat} />
-                        ))}
-                </Picker>
-            </View>
-            
-            {/* //? Nombre del producto */}
-            <Text style={GLOBAL_STYLES.subtitle}>Nombre del producto</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Ingrese el nombre del producto"
-                value={formData.nombre}
-                onChangeText={(text) => handleChange("nombre", text)}
-            />
-
-            {/* //? Imagen */}
-            <Text style={GLOBAL_STYLES.subtitle}>Imagen</Text>
-            <TouchableOpacity style={styles.imageButton} onPress={handleSelectImage}>
-                <Text style={styles.imageButtonText}>
-                    {formData.imagen ? "Imagen seleccionada" : "Seleccionar imagen"}
-                </Text>
+        <Layout titulo={'Nuevo Producto'}>
+            <Text style={GLOBAL_STYLES.subtitle}>Imagen del Producto</Text>
+            <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+                {selectedImageUri ? (
+                    <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />
+                ) : (
+                    <Text>Seleccionar imagen</Text>
+                )}
             </TouchableOpacity>
 
-            {/* //? Descripción */}
+            <Text style={GLOBAL_STYLES.subtitle}>Nombre del Producto</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Ej: Martillo de uña"
+                value={formData.nombreProducto}
+                onChangeText={(text) => handleChange("nombreProducto", text)}
+            />
+            
             <Text style={GLOBAL_STYLES.subtitle}>Descripción</Text>
             <TextInput
                 style={[styles.input, { height: 80 }]}
-                multiline
-                placeholder="Describe el producto..."
+                placeholder="Breve descripción del producto"
                 value={formData.descripcion}
                 onChangeText={(text) => handleChange("descripcion", text)}
+                multiline
             />
 
-            {/* //? Precio de compra */}
-            <Text style={GLOBAL_STYLES.subtitle}>Precio de compra</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="0.00"
-                keyboardType="numeric"
-                value={formData.precioCompra}
-                onChangeText={(text) => handleChange("precioCompra", text)}
-            />
-
-            {/* //? Precio de venta */}
-            <Text style={GLOBAL_STYLES.subtitle}>Precio de venta</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="0.00"
-                keyboardType="numeric"
-                value={formData.precioVenta}
-                onChangeText={(text) => handleChange("precioVenta", text)}
-            />
-
-            {/* //? Stock actual */}
-            <Text style={GLOBAL_STYLES.subtitle}>Stock actual</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Cantidad actual"
-                keyboardType="numeric"
-                value={formData.stockActual}
-                onChangeText={(text) => handleChange("stockActual", text)}
-            />
-
-            {/* //? Stock mínimo */}
-            <Text style={GLOBAL_STYLES.subtitle}>Stock mínimo</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Cantidad mínima"
-                keyboardType="numeric"
-                value={formData.stockMinimo}
-                onChangeText={(text) => handleChange("stockMinimo", text)}
-            />
-
-            {/* //? Medida */}
-            <Text style={GLOBAL_STYLES.subtitle}>Medida</Text>
-            <View style={styles.medidasContainer}>
-                {medidas.map((m) => (
-                    <TouchableOpacity
-                        key={m} style={[ styles.medidaBtn, formData.medida === m && styles.medidaBtnSelected ]}
-                        onPress={() => handleChange("medida", m)}
+            <Text style={GLOBAL_STYLES.subtitle}>Categoría</Text>
+            <View style={styles.pickerContainer}>
+                {isLoadingCategories ? <ActivityIndicator /> : (
+                    <Picker
+                        selectedValue={formData.idCategoria}
+                        onValueChange={(itemValue) => handleChange("idCategoria", itemValue)}
+                        style={styles.picker}
                     >
-                        <Text style={[ styles.medidaText, formData.medida === m && styles.medidaTextSelected ]}>
-                            {m}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
+                        <Picker.Item label="-- Seleccione una categoría --" value={null} />
+                        {categories.map((cat) => (
+                            <Picker.Item key={cat.idCategoria} label={cat.nombreCategoria} value={cat.idCategoria} />
+                        ))}
+                    </Picker>
+                )}
+            </View>
+            
+            <Text style={GLOBAL_STYLES.subtitle}>Proveedor (Opcional)</Text>
+            <View style={styles.pickerContainer}>
+                {isLoadingProviders ? <ActivityIndicator /> : (
+                    <Picker
+                        selectedValue={formData.idProveedor}
+                        onValueChange={(itemValue) => handleChange("idProveedor", itemValue)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="-- Seleccione un proveedor --" value={null} />
+                        {providers.map((prov) => (
+                            <Picker.Item key={prov.idProveedor} label={prov.nombreProveedor} value={prov.idProveedor} />
+                        ))}
+                    </Picker>
+                )}
             </View>
 
-            {/* //* Botón para guardar */}
-            <View style={{ marginTop: 20 }}>
+            <Text style={GLOBAL_STYLES.subtitle}>Medida</Text>
+            <View style={styles.pickerContainer}>
+                {/* Mostramos un ActivityIndicator si está cargando medidas */}
+                {isLoadingMeasures ? <ActivityIndicator /> : (
+                    <Picker
+                        // El picker se deshabilita si no hay categoría o si no hay medidas
+                        enabled={!!formData.idCategoria && measures.length > 0}
+                        selectedValue={formData.idMedida}
+                        onValueChange={(itemValue) => handleChange("idMedida", itemValue)}
+                        style={styles.picker}
+                    >
+                        {/* Mensaje dinámico basado en la selección de categoría */}
+                        {!formData.idCategoria ? (
+                            <Picker.Item label="-- Seleccione una categoría primero --" value={null} />
+                        ) : measures.length === 0 ? (
+                            <Picker.Item label="-- No hay medidas para esta categoría --" value={null} />
+                        ) : (
+                            <Picker.Item label="-- Seleccione una medida --" value={null} />
+                        )}
+                        
+                        {/* Mapeamos las medidas cargadas */}
+                        {measures.map((med) => (
+                            <Picker.Item key={med.idMedida} label={med.medida} value={med.idMedida} />
+                        ))}
+                    </Picker>
+                )}
+            </View>
+
+
+            <View style={styles.row}>
+                <View style={styles.column}>
+                    <Text style={GLOBAL_STYLES.subtitle}>Precio Compra</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="0.00"
+                        keyboardType="numeric"
+                        value={formData.precioCompra}
+                        onChangeText={(text) => handleChange("precioCompra", text)}
+                    />
+                </View>
+                <View style={styles.column}>
+                    <Text style={GLOBAL_STYLES.subtitle}>Precio Venta</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="0.00"
+                        keyboardType="numeric"
+                        value={formData.precioVenta}
+                        onChangeText={(text) => handleChange("precioVenta", text)}
+                    />
+                </View>
+            </View>
+
+            <View style={styles.row}>
+                <View style={styles.column}>
+                    <Text style={GLOBAL_STYLES.subtitle}>Stock Actual</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="0"
+                        keyboardType="numeric"
+                        value={formData.stockActual}
+                        onChangeText={(text) => handleChange("stockActual", text)}
+                    />
+                </View>
+                <View style={styles.column}>
+                    <Text style={GLOBAL_STYLES.subtitle}>Stock Mínimo</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="0"
+                        keyboardType="numeric"
+                        value={formData.stockMinimo}
+                        onChangeText={(text) => handleChange("stockMinimo", text)}
+                    />
+                </View>
+            </View>
+
+
+            <View style={{ marginTop: 20, marginBottom: 200 }}>
                 <GlobalButton
-                    text={"Añadir nuevo producto"}
-                    screen={"ProductosMain"}
+                    text={"Guardar Producto"}
+                    onPress={handleSave}
+                    disabled={isLoading}
                 />
             </View>
         </Layout>
@@ -156,50 +227,39 @@ const styles = StyleSheet.create({
         padding: SIZES.small,
         marginBottom: 10,
     },
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: COLORS.gray,
-        borderRadius: 10,
-        marginBottom: 10,
-        backgroundColor: COLORS.white,
-    },
-    imageButton: {
-        padding: SIZES.medium,
-        borderWidth: 1,
-        borderColor: COLORS.gray,
-        borderRadius: 10,
-        backgroundColor: COLORS.white,
-        alignItems: "center",
-        marginBottom: 10,
-    },
-    imageButtonText: {
-        color: COLORS.text,
-        fontWeight: "bold",
-    },
-    medidasContainer: {
+    row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginVertical: 10,
     },
-    medidaBtn: {
+    column: {
         flex: 1,
-        paddingVertical: 10,
         marginHorizontal: 4,
+    },
+    imagePicker: {
+        height: 150,
+        width: "100%",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 10,
+        overflow: "hidden",
+    },
+    imagePreview: {
+        width: "100%",
+        height: "100%",
+    },
+    pickerContainer: {
         backgroundColor: COLORS.white,
         borderWidth: 1,
         borderColor: COLORS.gray,
         borderRadius: 10,
-        alignItems: "center",
+        marginBottom: 10,
+        justifyContent: 'center',
     },
-    medidaBtnSelected: {
-        backgroundColor: COLORS.primary,
-        borderColor: COLORS.primary,
-    },
-    medidaText: {
-        color: COLORS.text,
-        fontWeight: "bold",
-    },
-    medidaTextSelected: {
-        color: COLORS.white,
-    },
+    picker: {
+        height: 50, 
+        width: '100%',
+        color: COLORS.black,
+    }
 });

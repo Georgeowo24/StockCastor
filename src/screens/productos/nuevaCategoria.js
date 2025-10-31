@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert} from "react-native";
 import Layout from "../layout";
 import GlobalButton from "../../components/buttton";
 import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles";
+import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function NuevaCategoria() {
+    const navigation = useNavigation();
+    const { handleAddCategory, error } = useCategoriesViewModel();
+
     const [formData, setFormData] = useState({
         nombre: "",
         descripcion: "",
@@ -12,6 +18,26 @@ export default function NuevaCategoria() {
 
     const handleChange = (key, value) => {
         setFormData({ ...formData, [key]: value });
+    };
+
+    const handleSave = async () => {
+        if (!formData.nombre.trim()) {
+            Alert.alert("Error", "El nombre de la categoría es obligatorio");
+            return;
+        }
+
+        try {
+            await handleAddCategory({
+                nombreCategoria: formData.nombre.trim(),
+                descripcion: formData.descripcion.trim(),
+            });
+
+            Alert.alert("Éxito", "Categoría creada correctamente", [
+                { text: "OK", onPress: () => navigation.navigate("ProductosMain") },
+            ]);
+        } catch (e) {
+            Alert.alert("Error", e.message || "No se pudo crear la categoría");
+        }
     };
 
     return (
@@ -39,9 +65,16 @@ export default function NuevaCategoria() {
             <View style={{ marginTop: 20 }}>
                 <GlobalButton
                     text={"Añadir nueva categoría"}
-                    screen={"ProductosMain"}
+                    onPress={handleSave}
+                    color="success1"
                 />
             </View>
+
+            {error && (
+                <Text style={{ color: COLORS.danger1, marginTop: 10 }}>
+                    {error}
+                </Text>
+            )}
         </Layout>
     );
 }

@@ -1,9 +1,10 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy'; // <--- ESTA ES LA CORRECCIÓN
 
 // Define un directorio permanente para las imágenes de productos
+// Usamos tu constante original
 const IMAGE_DIR = FileSystem.documentDirectory + 'product_images/';
 
-// Helper para asegurar que el directorio exista
+// Helper para asegurar que el directorio exista (revertido a tu código original)
 const ensureDirExists = async () => {
   const dirInfo = await FileSystem.getInfoAsync(IMAGE_DIR);
   if (!dirInfo.exists) {
@@ -22,12 +23,12 @@ export const saveImage = async (tempUri) => {
 
   await ensureDirExists();
   
-  // Genera un nombre de archivo único
+  // Genera un nombre de archivo único (revertido a tu código original)
   const filename = Date.now() + '.jpg';
   const permanentUri = IMAGE_DIR + filename;
 
   try {
-    // Copia el archivo
+    // Copia el archivo (revertido a tu código original)
     await FileSystem.copyAsync({
       from: tempUri,
       to: permanentUri,
@@ -47,7 +48,7 @@ export const deleteImage = async (uri) => {
   if (!uri) return;
 
   try {
-    // Verifica si el archivo existe antes de intentar borrarlo
+    // Verifica si el archivo existe (revertido a tu código original)
     const fileInfo = await FileSystem.getInfoAsync(uri);
     if (fileInfo.exists) {
       await FileSystem.deleteAsync(uri);
@@ -57,3 +58,4 @@ export const deleteImage = async (uri) => {
     console.error('Error al eliminar la imagen:', error);
   }
 };
+

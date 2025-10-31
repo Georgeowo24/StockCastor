@@ -3,20 +3,25 @@ import { Text, TouchableOpacity, StyleSheet } from "react-native";
 import { GLOBAL_STYLES, COLORS } from "../styles/globalStyles";
 import { useNavigation } from '@react-navigation/native';
 
-export default function GlobalButton({ text, screen, style, color = "primary" }) {
+export default function GlobalButton({ text, screen, onPress, style, color = "primary" }) {
     const navigation = useNavigation();
+    const buttonColor = COLORS[color] || COLORS.primary;
 
     const handlePress = () => {
-        if (!screen) return;
+        if (onPress) {
+            onPress();
+            return;
+        }
 
-        if (screen.toLowerCase() === "volver") {
-            navigation.goBack();
-        } else {
-            navigation.navigate(screen);
+        if (screen) {
+            if (screen.toLowerCase() === "volver") {
+                navigation.goBack();
+            } else {
+                navigation.navigate(screen);
+            }
         }
     };
 
-    const buttonColor = COLORS[color] || COLORS.primary;
 
     return (
         <TouchableOpacity

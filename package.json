@@ -18,7 +18,7 @@
     "expo": "~54.0.0",
     "expo-file-system": "~19.0.17",
     "expo-image-picker": "~17.0.8",
-    "expo-sqlite": "~16.0.8",
+    "expo-sqlite": "^16.0.8",
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -27,11 +27,8 @@
     "react-native-image-picker": "^8.2.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
-<<<<<<< HEAD
+    "react-native-svg": "15.12.1",
     "react-native-web": "^0.21.0"
-=======
-    "react-native-svg": "15.12.1"
->>>>>>> b3f8612bff2f8d768bd54681e003a9017743aefc
   },
   "private": true,
   "devDependencies": {

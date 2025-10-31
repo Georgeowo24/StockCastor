@@ -2,34 +2,22 @@ import * as SQLiteDatabase from 'expo-sqlite';
 
 async function createTables(db) {
     const tables = [
-        //? Tabla de Usuarios/Comerciantes
-        `CREATE TABLE IF NOT EXISTS negocios (
-            idNegocio INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombreNegocio TEXT NOT NULL,
-            nombrePropietario TEXT NOT NULL,
-            activo INTEGER DEFAULT 1
-        );`,
-
-        //? Tabla de Categorías de Productos
+        //? Tabla de Categorías
         `CREATE TABLE IF NOT EXISTS categorias (
             idCategoria INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             nombreCategoria TEXT NOT NULL,
             descripcion TEXT,
             activa INTEGER DEFAULT 1,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE,
-            UNIQUE (idNegocio, nombreCategoria)
+            UNIQUE (nombreCategoria)
         );`,
 
         //? Tabla de Proveedores
         `CREATE TABLE IF NOT EXISTS proveedores (
             idProveedor INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             nombreProveedor TEXT NOT NULL,
             telefono TEXT,
             direccion TEXT,
-            activo INTEGER DEFAULT 1,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE
+            activo INTEGER DEFAULT 1
         );`,
 
         //? Tabla de Medidas
@@ -41,10 +29,11 @@ async function createTables(db) {
             UNIQUE (idCategoria, medida)
         );`,
 
+
+
         //? Tabla de Productos
         `CREATE TABLE IF NOT EXISTS productos (
             idProducto INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             idCategoria INTEGER,
             idProveedor INTEGER,
             nombreProducto TEXT NOT NULL,
@@ -58,7 +47,6 @@ async function createTables(db) {
             activo INTEGER DEFAULT 1,
             fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
             fechaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE,
             FOREIGN KEY (idCategoria) REFERENCES categorias(idCategoria) ON DELETE SET NULL,
             FOREIGN KEY (idProveedor) REFERENCES proveedores(idProveedor) ON DELETE SET NULL,
             FOREIGN KEY (idMedida) REFERENCES medidas(idMedida) ON DELETE SET NULL
@@ -67,13 +55,11 @@ async function createTables(db) {
         //? Tabla de Clientes
         `CREATE TABLE IF NOT EXISTS clientes (
             idCliente INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             nombreCliente TEXT NOT NULL,
             telefono TEXT,
             direccion TEXT,
             fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-            activo INTEGER DEFAULT 1,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE
+            activo INTEGER DEFAULT 1
         );`,
 
         //? Tabla de los Metodos de Pago
@@ -92,14 +78,12 @@ async function createTables(db) {
         //? Tabla de Ventas
         `CREATE TABLE IF NOT EXISTS ventas (
             idVenta INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             idCliente INTEGER,
             folioVenta TEXT NOT NULL UNIQUE,
             fechaVenta DATETIME DEFAULT CURRENT_TIMESTAMP,
             idMetodoPago INTEGER NOT NULL DEFAULT 1,
             idEstadoVenta INTEGER NOT NULL DEFAULT 1,
             notas TEXT,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE,
             FOREIGN KEY (idCliente) REFERENCES clientes(idCliente) ON DELETE RESTRICT,
             FOREIGN KEY (idMetodoPago) REFERENCES metodosPago(idMetodoPago) ON DELETE RESTRICT,
             FOREIGN KEY (idEstadoVenta) REFERENCES estadosVentas(idEstadoVenta) ON DELETE RESTRICT
@@ -132,7 +116,6 @@ async function createTables(db) {
         //? Tabla de Pedidos
         `CREATE TABLE IF NOT EXISTS pedidos (
             idPedido INTEGER PRIMARY KEY AUTOINCREMENT,
-            idNegocio INTEGER NOT NULL,
             idCliente INTEGER NOT NULL,
             folioPedido TEXT NOT NULL UNIQUE,
             fechaPedido DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -141,7 +124,6 @@ async function createTables(db) {
             anticipo REAL DEFAULT 0,
             idEstadoPedido INTEGER DEFAULT 1,
             notas TEXT,
-            FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) ON DELETE CASCADE,
             FOREIGN KEY (idCliente) REFERENCES clientes(idCliente) ON DELETE RESTRICT,
             FOREIGN KEY (idTipoPedido) REFERENCES tipoPedido(idTipoPedido) ON DELETE RESTRICT,
             FOREIGN KEY (idEstadoPedido) REFERENCES estadosPedidos(idEstadoPedido) ON DELETE RESTRICT
@@ -158,25 +140,69 @@ async function createTables(db) {
             FOREIGN KEY (idPedido) REFERENCES pedidos(idPedido) ON DELETE CASCADE,
             FOREIGN KEY (idProducto) REFERENCES productos(idProducto) ON DELETE SET NULL
         );`,
-    ]
+    ];
 
-    for (const tableQuery of tables) { 
+    for (const tableQuery of tables) {
         try {
             await db.execAsync(tableQuery);
             console.log("Table created or already exists.");
-            await new Promise((r) => setTimeout(r, 50))
+            await new Promise((r) => setTimeout(r, 50));
         } catch (error) {
-            console.error("Error creating tables:", error); 
+            console.error("Error creating tables:", error);
         }
     }
 }
 
-export async function initDatabase(db) { 
+async function seedData(db) {
+    console.log("Iniciando 'seed' de datos de medidas...");
+    try {
+        const medidasAInsertar = [
+            {
+                categoria: "Camisas",
+                medidas: ["XS", "S", "M", "L", "XL"]
+            },
+            {
+                categoria: "Pantalones Mezclilla",
+                medidas: ["30", "32", "34", "36"]
+            }
+        ];
+
+        for (const item of medidasAInsertar) {
+            const categoriaNombre = item.categoria;
+            const categoriaRow = await db.getFirstAsync(
+                "SELECT idCategoria FROM categorias WHERE nombreCategoria = ?",
+                [categoriaNombre]
+            );
+
+            if (categoriaRow && categoriaRow.idCategoria) {
+                const idCategoria = categoriaRow.idCategoria;
+
+                for (const medidaNombre of item.medidas) {
+                    await db.runAsync(
+                        "INSERT OR IGNORE INTO medidas (idCategoria, medida) VALUES (?, ?)",
+                        [idCategoria, medidaNombre]
+                    );
+                }
+                console.log(`Medidas insertadas/ignoradas para: ${categoriaNombre}`);
+            } else {
+                console.warn(`Categoría "${categoriaNombre}" no encontrada. Saltando 'seed' de medidas.`);
+            }
+        }
+        console.log("'Seed' de medidas completado.");
+
+    } catch (error) {
+        console.error("Error durante el 'seed' de datos:", error);
+    }
+}
+
+export async function initDatabase(db) {
     try {
         await db.execAsync(`PRAGMA journal_mode = 'WAL'; PRAGMA foreign_keys = ON;`);
         await createTables(db);
         console.log("Database initialized successfully");
+        await seedData(db);
+        console.log("Inserción de datos exitosa");
     } catch (error) {
-        console.error("Error initializing database:", error); 
+        console.error("Error initializing database:", error);
     }
 }

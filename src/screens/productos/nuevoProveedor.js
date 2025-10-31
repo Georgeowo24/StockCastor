@@ -3,11 +3,16 @@ import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 
 import Layout from "../layout";
 import GlobalButton from "../../components/buttton";
 import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles";
+import { useNavigation } from "@react-navigation/native";
+import { useProvidersViewModel } from "../../ViewModels/providersViewModel";
+
 
 export default function NuevoProveedor() {
+    const navigation = useNavigation();
+    const { handleAddProvider, error, isLoading } = useProvidersViewModel();
 
     const [formData, setFormData] = useState({
-        nombre: "",
+        nombreProveedor: "",
         telefono: "",
         direccion: "",
     });
@@ -16,15 +21,31 @@ export default function NuevoProveedor() {
         setFormData({ ...formData, [key]: value });
     };
     
+    const handleSave = async () => {
+        if (!formData.nombreProveedor) {
+            alert("El nombre del proveedor es obligatorio.");
+            return;
+        }
+
+        try {
+            await handleAddProvider(formData);
+            alert("Proveedor añadido con éxito");
+            navigation.goBack();
+        } catch (e) {
+            console.error(e);
+            alert("Error al guardar el proveedor");
+        }
+    };
+
     return (
         <Layout titulo={'Nuevo Proveedor'}>
             {/* //? Nombre del proveedor */}
-            <Text style={GLOBAL_STYLES.subtitle}>Nombre</Text>
+            <Text style={GLOBAL_STYLES.subtitle}>Nombre del proveedor</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Juan J."
-                value={formData.nombre}
-                onChangeText={(text) => handleChange("nombre", text)}
+                value={formData.nombreProveedor}
+                onChangeText={(text) => handleChange("nombreProveedor", text)}
             />
             
             {/* //? Stock actual */}
@@ -52,7 +73,7 @@ export default function NuevoProveedor() {
             <View style={{ marginTop: 20 }}>
                 <GlobalButton
                     text={"Añadir nuevo Proveedor"}
-                    screen={"ProductosMain"}
+                    onPress={handleSave}
                 />
             </View>
         </Layout>

@@ -1,18 +1,16 @@
 import {openDatabase} from '../database/openDB';
 
-//! Falta probar
 export const addProduct = async (idCategoria,idProveedor,nombreProducto,imagen,descripcion,precioCompra,precioVenta,stockActual,stockMinimo,idMedida) => {
     const db = await openDatabase();
-
     try{
-        const result = await db.withTransactionAsync(async (tx) =>{
-            return await tx.executeSqlAsync(
-                "INSERT INTO productos(idCategoria,idProveedor,nombreProducto,imagen,descripcion,precioCompra,precioVenta,stockActual,stockMinimo,idMedida) values (?,?,?,?,?,?,?,?,?,?)",
+        const result = await db.runAsync(
+            "INSERT INTO productos(idCategoria,idProveedor,nombreProducto,imagen,descripcion,precioCompra,precioVenta,stockActual,stockMinimo,idMedida) VALUES (?,?,?,?,?,?,?,?,?,?)",
             [idCategoria,idProveedor,nombreProducto,imagen,descripcion,
                 precioCompra,precioVenta,stockActual,stockMinimo,idMedida]
-            );
-        });
-        return result.insertId;
+        );
+        
+        console.log('Producto añadido exitosamente')
+        return result.lastInsertRowId;
     }
     catch(error){
         console.error("Error al agregar el producto",error);
@@ -24,7 +22,7 @@ export const addProduct = async (idCategoria,idProveedor,nombreProducto,imagen,d
 export const getAllProducts = async () => {
     const db = await openDatabase();
     try {
-        const allRows = await db.getAllAsync('SELECT * FROM productos ORDER BY nombreProducto');
+        const allRows = await db.getAllAsync('SELECT * FROM productos WHERE activo = 1 ORDER BY nombreProducto');
         return allRows; 
     } catch (error) {
         console.error('Error al obtener todos los productos:', error);
@@ -35,15 +33,13 @@ export const getAllProducts = async () => {
 //! Falta Probar
 export const EditProduct = async (idProducto,idCategoria,idProveedor,nombreProducto,imagen = null,descripcion,precioCompra,precioVenta,stockActual,stockMinimo,idMedida) => {
     const db = await openDatabase();
-
     try{
-        const result = await db.withTransactionAsync(async (tx) =>{
-            return await tx.executeSqlAsync(
-                "UPDATE  productos SET idCategoria = ?,idProveedor = ?,nombreProducto = ?,imagen= ?,descripcion = ?,precioCompra = ?,precioVenta = ?,stockActual = ?,stockMinimo = ?,idMedida = ? WHERE idProducto = ?",
+        const result = await db.runAsync(
+            "UPDATE productos SET idCategoria = ?, idProveedor = ?, nombreProducto = ?, imagen = ?, descripcion = ?, precioCompra = ?, precioVenta = ?, stockActual = ?, stockMinimo = ?, idMedida = ? WHERE idProducto = ?",
             [idCategoria,idProveedor,nombreProducto,imagen,descripcion,
                 precioCompra,precioVenta,stockActual,stockMinimo,idMedida,idProducto]
-            );
-        });
+        );
+        // runAsync retorna changes
         return result.changes;
     }
     catch(error){
@@ -53,7 +49,7 @@ export const EditProduct = async (idProducto,idCategoria,idProveedor,nombreProdu
 }
 
 export const DeleteProduct = async(idProducto) => {
-    const db = openDatabase();
+    const db = await openDatabase();
     try{
         const result = await db.runAsync("UPDATE productos SET activo = 0 WHERE idProducto = ?",[idProducto]);
         return result.changes;
@@ -65,10 +61,10 @@ export const DeleteProduct = async(idProducto) => {
 }
 
 export const getLowStockProducts = async () => {
-    const db = await getDbAsync();
+    const db = await openDatabase();
     try {
         const rows = await db.getAllAsync(
-        'SELECT * FROM productos WHERE stockActual < stockMinimo');
+        'SELECT * FROM productos WHERE stockActual < stockMinimo AND activo = 1'); 
         return rows;
     } catch (error) {
         console.error('Error al obtener stock bajo:', error);
@@ -84,8 +80,8 @@ export const findProductsByName = async (query) => {
         const prefixQuery = `${query}%`; 
 
         const rows = await db.getAllAsync(
-        'SELECT * FROM productos WHERE nombreProducto LIKE ?',
-        [prefixQuery] // El comodín % va AL FINAL
+        'SELECT * FROM productos WHERE nombreProducto LIKE ? AND activo = 1',
+        [prefixQuery]
         );
         return rows;
     } catch (error) {
@@ -96,47 +92,56 @@ export const findProductsByName = async (query) => {
 
 //! Sin probar
 export const getProductsGroupedByCategory = async () => {
-    const db = await getDbAsync();
-    
+    const db = await openDatabase();
     try {
-        // 1. Obtenemos todos los productos, ORDENADOS por categoría.
-        // Esto es clave para que el 'reduce' funcione eficientemente.
-        const allProducts = await db.getAllAsync(
-        'SELECT idProducto,precioVenta,stockActual,imagen,nombreCategoria FROM productos join categorias ORDER BY productos.idCategoria'
-        );
+        const allProducts = await db.getAllAsync(`
+            SELECT 
+                p.idProducto,
+                p.nombreProducto,
+                p.precioVenta,
+                p.stockActual,
+                p.imagen,
+                c.nombreCategoria
+            FROM productos p
+            LEFT JOIN categorias c ON p.idCategoria = c.idCategoria
+            WHERE p.activo = 1
+        `);
 
-        // 2. Agrupamos los productos usando JavaScript (reduce)
-        
-        // Primero, creamos un mapa (objeto) donde cada clave es una categoría
-        const productsMap = allProducts.reduce((acc, product) => {
-        // Usamos 'Sin Categoría' si el campo es null o vacío
-        const category = product.nombreCategoria || 'Sin Categoría'; 
-        
-        // Si la categoría aún no existe en el acumulador, créala
-        if (!acc[category]) {
-            acc[category] = [];
+        if (!allProducts || allProducts.length === 0) {
+            console.log("⚠️ No se encontraron productos en la base de datos.");
+            return [];
         }
-        
-        // Añade el producto actual al array de su categoría
-        acc[category].push(product);
-        
-        return acc;
-        }, {}); // El valor inicial es un objeto vacío {}
 
-        // 3. Convertimos el mapa al formato de SectionList
-        // Object.keys(productsMap) -> ['Categoría 1', 'Categoría 2']
-        const groupedProducts = Object.keys(productsMap).map(categoryTitle => ({
-        title: categoryTitle,       // El título de la sección
-        data: productsMap[categoryTitle] // El array de productos para esa sección
+        // Agrupamos productos por categoría
+        const grouped = allProducts.reduce((acc, product) => {
+            const categoria = product.nombreCategoria || "Sin categoría";
+            if (!acc[categoria]) acc[categoria] = [];
+            acc[categoria].push(product);
+            return acc;
+        }, {});
+
+        
+        // Convertimos a formato [{ categoria, productos: [...] }]
+        const finalGroupedArray = Object.keys(grouped).map((categoria) => ({
+            categoria,
+            // Ordenamos los productos DENTRO de cada categoría
+            productos: grouped[categoria].sort((a, b) => 
+                a.nombreProducto.localeCompare(b.nombreProducto)
+            ),
         }));
 
-        return groupedProducts;
-        
+        // Ordenamos el array final por nombre de categoría
+        finalGroupedArray.sort((a, b) => a.categoria.localeCompare(b.categoria));
+
+        return finalGroupedArray;
+
     } catch (error) {
-        console.error('Error al obtener productos agrupados por categoría:', error);
+        console.error("Error al obtener productos agrupados por categoría:", error);
         throw error;
     }
 };
+
+
 
 export const getProductData = async (idProducto)=>{
     const db = await openDatabase();
@@ -152,7 +157,7 @@ export const getProductData = async (idProducto)=>{
 export const getSelectProducts = async() =>{
     const db = await openDatabase();
     try {
-        const result = await db.getAllAsync("SELECT idProducto,nombreProducto from productos");
+        const result = await db.getAllAsync("SELECT idProducto,nombreProducto from productos WHERE activo = 1");
         return result;
     } catch (error) {
         console.error("Error al obtener productos select",error);

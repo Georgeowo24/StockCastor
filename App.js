@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, StatusBar, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from './src/styles/globalStyles';
+import * as SQLite from 'expo-sqlite';
+
+// Base de Datos
+import { openDatabase } from './src/database/openDB';
+import { initDatabase } from './src/database/initTables';
+import { createIndexes } from './src/database/createIndexes';
 
 // Pantallas principales
 import InicioScreen from './src/screens/inicio';
@@ -14,6 +20,35 @@ import ProductosStack from './src/navigation/productosStack';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [status, setStatus] = useState('loading');
+      
+  useEffect(() => {
+  async function setupDatabase() {
+      try {
+        // const dbName = "StockCastor.db"
+        // console.log(`🧨 Borrando base de datos antigua: ${dbName}...`);
+        // await SQLite.deleteDatabaseAsync(dbName);
+        // console.log('🗑️ Base de datos eliminada.');
+
+        console.log('📂 Abriendo base de datos...');
+        const db = await openDatabase();
+
+        console.log('⚙️ Inicializando tablas...');
+        await initDatabase(db);
+        
+        console.log('Creando indices...'); 
+        await createIndexes(db);
+
+        console.log('✅ Todas las tablas fueron creadas correctamente');
+        setStatus('success');
+        }catch(error){
+        console.error('❌ Error al crear tablas:', error);
+        setStatus('error');
+      }
+    }
+    setupDatabase();
+  }, []);
+
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
       <StatusBar

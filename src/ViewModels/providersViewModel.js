@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as ProvidersRepository from '../repositories/ProvidersRepository'
-export const useCategoriesViewModel = ()=>{
+
+export const useProvidersViewModel = ()=>{
     const [providers, setProviders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
