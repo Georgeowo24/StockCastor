@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ProveedoresScreen from '../screens/proveedores/proveedores';
+import ProveedoresScreen from '../proveedores/proveedores';
 
 
 const Stack = createNativeStackNavigator();

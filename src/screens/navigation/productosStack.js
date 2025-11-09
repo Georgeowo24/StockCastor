@@ -1,9 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ProductosScreen from '../screens/productos/productos';
-import NuevoProducto from '../screens/productos/nuevoProducto';
-import NuevaCategoria from '../screens/productos/nuevaCategoria';
-import NuevoProveedor from '../screens/productos/nuevoProveedor';
+import ProductosScreen from '../productos/productos';
+import NuevoProducto from '../productos/nuevoProducto';
+import NuevaCategoria from '../productos/nuevaCategoria';
+import NuevoProveedor from '../productos/nuevoProveedor';
 
 const Stack = createNativeStackNavigator();
 

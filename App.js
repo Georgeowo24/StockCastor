@@ -12,10 +12,10 @@ import { SetupDatabase, DropDatabase } from './src/database/setupDatabase';
 
 //* Pantallas principales
 import InicioScreen from './src/screens/inicio';
-import ProveedoresStack from './src/navigation/proveedoresStack';
-import ProductosStack from './src/navigation/productosStack';
-import VentasStack from './src/navigation/ventasStack';
-import ApartadosStack from './src/navigation/apartadosStack';
+import ProveedoresStack from './src/screens/navigation/proveedoresStack';
+import ProductosStack from './src/screens/navigation/productosStack';
+import VentasStack from './src/screens/navigation/ventasStack';
+import ApartadosStack from './src/screens/navigation/apartadosStack';
 
 const Tab = createBottomTabNavigator();
 
