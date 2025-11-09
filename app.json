@@ -2,7 +2,7 @@
   "expo": {
     "name": "StockCastor",
     "slug": "StockCastor",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/StockCastor.png",
     "userInterfaceStyle": "light",
@@ -17,16 +17,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/StockCastor.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.StockCastor"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/StockCastor.png"
     },
     "plugins": [
-      "expo-sqlite"
-    ]
+      "expo-sqlite",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7ba25575-9561-4f56-83c0-1a72030af479"
+      }
+    }
   }
 }
