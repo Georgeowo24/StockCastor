@@ -1,53 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, StatusBar, Platform } from 'react-native';
+import { StyleSheet, View, StatusBar, Platform, ActivityIndicator, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from './src/styles/globalStyles';
 import * as SQLite from 'expo-sqlite';
 
-// Base de Datos
-import { openDatabase } from './src/database/openDB';
-import { initDatabase } from './src/database/initTables';
-import { createIndexes } from './src/database/createIndexes';
+//* Base de Datos
+import { SetupDatabase, DropDatabase } from './src/database/setupDatabase';
 
-// Pantallas principales
+
+//* Pantallas principales
 import InicioScreen from './src/screens/inicio';
-import VentasScreen from './src/screens/ventas/ventas';
-import ApartadosScreen from './src/screens/apartados/apartados';
+import ProveedoresStack from './src/navigation/proveedoresStack';
 import ProductosStack from './src/navigation/productosStack';
+import VentasStack from './src/navigation/ventasStack';
+import ApartadosStack from './src/navigation/apartadosStack';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  // Estado para saber si la BD esta lista
   const [status, setStatus] = useState('loading');
-      
+
+  
   useEffect(() => {
-  async function setupDatabase() {
+    async function SetupDatabaseAppJS () {
       try {
-        // const dbName = "StockCastor.db"
-        // console.log(`🧨 Borrando base de datos antigua: ${dbName}...`);
-        // await SQLite.deleteDatabaseAsync(dbName);
-        // console.log('🗑️ Base de datos eliminada.');
+        //! Descomentar si quieres borrar la BD
+        // await DropDatabase();
 
-        console.log('📂 Abriendo base de datos...');
-        const db = await openDatabase();
-
-        console.log('⚙️ Inicializando tablas...');
-        await initDatabase(db);
-        
-        console.log('Creando indices...'); 
-        await createIndexes(db);
-
-        console.log('✅ Todas las tablas fueron creadas correctamente');
+        //? Configurando la BD
+        await SetupDatabase();
         setStatus('success');
-        }catch(error){
-        console.error('❌ Error al crear tablas:', error);
-        setStatus('error');
+      } catch ( error ) {
+        console.log('❌ Error fatal al configurar la base de datos:', error)
+        setStatus('error')
       }
     }
-    setupDatabase();
+    SetupDatabaseAppJS();
   }, []);
+
+  // Mostramos 'Loading' mientras la BD se inicializa
+  if (status === 'loading') {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ marginTop: 10, color: COLORS.text }}>Cargando datos...</Text>
+      </View>
+    );
+  }
+
+  // Mostramos un error si falla
+  if (status === 'error') {
+      return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+        <Text style={{ color: COLORS.danger1, padding: 20, textAlign: 'center' }}>
+          Error al cargar la base de datos. La aplicación no puede continuar.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
@@ -71,7 +84,7 @@ export default function App() {
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               position: 'absolute',
-              bottom: 45,
+              bottom: 60,
               marginHorizontal: 10,
               backgroundColor: COLORS.white,
               borderRadius: 25,
@@ -83,6 +96,7 @@ export default function App() {
             tabBarIcon: ({ focused }) => {
               let iconName;
               if (route.name === 'Inicio') iconName = focused ? 'home' : 'home-outline';
+              else if (route.name === 'Proveedores') iconName = focused ? 'people' : 'people-outline';
               else if (route.name === 'Productos') iconName = focused ? 'pricetag' : 'pricetag-outline';
               else if (route.name === 'Ventas') iconName = focused ? 'cart' : 'cart-outline';
               else if (route.name === 'Apartados') iconName = focused ? 'bookmark' : 'bookmark-outline';
@@ -91,9 +105,10 @@ export default function App() {
           })}
         >
           <Tab.Screen name="Inicio" component={InicioScreen} />
+          <Tab.Screen name="Proveedores" component={ProveedoresStack} />
           <Tab.Screen name="Productos" component={ProductosStack} />
-          <Tab.Screen name="Ventas" component={VentasScreen} />
-          <Tab.Screen name="Apartados" component={ApartadosScreen} />
+          <Tab.Screen name="Ventas" component={VentasStack} />
+          <Tab.Screen name="Apartados" component={ApartadosStack} />
         </Tab.Navigator>
       </NavigationContainer>
     </View>

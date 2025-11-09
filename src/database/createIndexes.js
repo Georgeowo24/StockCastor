@@ -2,14 +2,19 @@ import * as SQLiteDatabase from 'expo-sqlite';
 
 export async function createIndexes(db) {
     const indexes = [
-        // Categorías
-        'CREATE INDEX IF NOT EXISTS idx_categorias_nombre ON categorias(nombreCategoria);',
-
         // Proveedores
         'CREATE INDEX IF NOT EXISTS idx_proveedores_nombre ON proveedores(nombreProveedor);',
+        
+        // Tipos de Medidas
+        'CREATE INDEX IF NOT EXISTS idx_medidas_tipoMedida ON medidas(idTipoMedida);',
+        'CREATE INDEX IF NOT EXISTS idx_medidas_medida ON medidas(medida);',
+
 
         // Medidas
-        'CREATE INDEX IF NOT EXISTS idx_medidas_categoria_medida ON medidas(idCategoria, medida);',
+        'CREATE INDEX IF NOT EXISTS idx_medidas_tipoMedida ON medidas(idTipoMedida);',
+
+        // Categorías
+        'CREATE INDEX IF NOT EXISTS idx_categorias_nombre ON categorias(nombreCategoria);',
 
         // Productos (foreign keys y búsquedas)
         'CREATE INDEX IF NOT EXISTS idx_productos_idCategoria ON productos(idCategoria);',

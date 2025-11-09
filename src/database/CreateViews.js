@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-export async function createViews(db) {
+export async function CreateViews(db) {
     const views = [
         //? Vista: Inventario Actual
         `CREATE VIEW IF NOT EXISTS vistaInventarioActual AS

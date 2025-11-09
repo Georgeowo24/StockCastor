@@ -25,7 +25,7 @@ export const getSelectCategory = async ()=>{
         console.error("Error al obtener Categorias Select",error);
         throw error;
     }
-} 
+}
 
 export const editCategory = async (idCategoria,nombreCategoria,descripcion)=>{
     const db = await openDatabase();

@@ -2,15 +2,6 @@ import * as SQLiteDatabase from 'expo-sqlite';
 
 async function createTables(db) {
     const tables = [
-        //? Tabla de Categorías
-        `CREATE TABLE IF NOT EXISTS categorias (
-            idCategoria INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombreCategoria TEXT NOT NULL,
-            descripcion TEXT,
-            activa INTEGER DEFAULT 1,
-            UNIQUE (nombreCategoria)
-        );`,
-
         //? Tabla de Proveedores
         `CREATE TABLE IF NOT EXISTS proveedores (
             idProveedor INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,16 +11,30 @@ async function createTables(db) {
             activo INTEGER DEFAULT 1
         );`,
 
+        //? Tabla de Tipos de Medida
+        `CREATE TABLE IF NOT EXISTS tiposMedidas (
+            idTipoMedida INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombreTipoMedida TEXT NOT NULL UNIQUE
+        );`,
+
         //? Tabla de Medidas
         `CREATE TABLE IF NOT EXISTS medidas (
             idMedida INTEGER PRIMARY KEY AUTOINCREMENT,
-            idCategoria INTEGER NOT NULL,
+            idTipoMedida INTEGER NOT NULL,
             medida TEXT NOT NULL,
-            FOREIGN KEY (idCategoria) REFERENCES categorias(idCategoria) ON DELETE CASCADE,
-            UNIQUE (idCategoria, medida)
+            FOREIGN KEY (idTipoMedida) REFERENCES tiposMedidas(idTipoMedida) ON DELETE CASCADE,
+            UNIQUE (idTipoMedida, medida)
         );`,
 
-
+        //? Tabla de Categorías
+        `CREATE TABLE IF NOT EXISTS categorias (
+            idCategoria INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombreCategoria TEXT NOT NULL UNIQUE,
+            descripcion TEXT,
+            activa INTEGER DEFAULT 1,
+            idTipoMedida INTEGER,
+            FOREIGN KEY (idTipoMedida) REFERENCES tiposMedidas (idTipoMedida) ON DELETE SET NULL
+        );`,
 
         //? Tabla de Productos
         `CREATE TABLE IF NOT EXISTS productos (
@@ -153,56 +158,13 @@ async function createTables(db) {
     }
 }
 
-async function seedData(db) {
-    console.log("Iniciando 'seed' de datos de medidas...");
-    try {
-        const medidasAInsertar = [
-            {
-                categoria: "Camisas",
-                medidas: ["XS", "S", "M", "L", "XL"]
-            },
-            {
-                categoria: "Pantalones Mezclilla",
-                medidas: ["30", "32", "34", "36"]
-            }
-        ];
-
-        for (const item of medidasAInsertar) {
-            const categoriaNombre = item.categoria;
-            const categoriaRow = await db.getFirstAsync(
-                "SELECT idCategoria FROM categorias WHERE nombreCategoria = ?",
-                [categoriaNombre]
-            );
-
-            if (categoriaRow && categoriaRow.idCategoria) {
-                const idCategoria = categoriaRow.idCategoria;
-
-                for (const medidaNombre of item.medidas) {
-                    await db.runAsync(
-                        "INSERT OR IGNORE INTO medidas (idCategoria, medida) VALUES (?, ?)",
-                        [idCategoria, medidaNombre]
-                    );
-                }
-                console.log(`Medidas insertadas/ignoradas para: ${categoriaNombre}`);
-            } else {
-                console.warn(`Categoría "${categoriaNombre}" no encontrada. Saltando 'seed' de medidas.`);
-            }
-        }
-        console.log("'Seed' de medidas completado.");
-
-    } catch (error) {
-        console.error("Error durante el 'seed' de datos:", error);
-    }
-}
-
 export async function initDatabase(db) {
     try {
         await db.execAsync(`PRAGMA journal_mode = 'WAL'; PRAGMA foreign_keys = ON;`);
+
         await createTables(db);
         console.log("Database initialized successfully");
-        await seedData(db);
-        console.log("Inserción de datos exitosa");
-    } catch (error) {
+    } catch ( error ) {
         console.error("Error initializing database:", error);
     }
 }
