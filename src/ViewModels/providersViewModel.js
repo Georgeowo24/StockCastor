@@ -31,6 +31,7 @@ export const useProvidersViewModel = ()=>{
         }
         try {
             await ProvidersRepository.addProvider(infoProvider.nombreProveedor,infoProvider.telefono,infoProvider.direccion)
+            await loadAllProviders();
         } catch (error) {
             setError(error.message);
         }
@@ -43,6 +44,7 @@ export const useProvidersViewModel = ()=>{
         }
         try {
             await ProvidersRepository.editProvider(infoProvider.idProveedor,infoProvider.nombreProveedor,infoProvider.telefono,infoProvider.direccion)
+            await loadAllProviders();
         } catch (error) {
             setError(error.message);
         }
@@ -51,6 +53,7 @@ export const useProvidersViewModel = ()=>{
     const handleDeleteProvider = async (id) => {
         try {
             await ProvidersRepository.deleteProvider(id);
+            await loadAllProviders();
         } catch (e) {
             setError(e.message);
         }

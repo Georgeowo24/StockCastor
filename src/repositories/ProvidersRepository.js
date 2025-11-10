@@ -8,7 +8,7 @@ export const addProvider = async (nombreProveedor, telefono = "", direccion = ""
             [nombreProveedor, telefono, direccion]
         );
         
-        console.log('Creando nuevo proveedor');
+        console.log('Nuevo proveedor añadido');
         return result.lastInsertRowId; 
     } catch (error) {
         console.error("Error al crear proveedor", error);
@@ -19,10 +19,10 @@ export const addProvider = async (nombreProveedor, telefono = "", direccion = ""
 export const getSelectProvider = async () => {
     const db = await openDatabase();
     try {
-        const result = await db.getAllAsync("SELECT idProveedor, nombreProveedor FROM proveedores WHERE activo = 1")
+        const result = await db.getAllAsync("SELECT idProveedor, nombreProveedor, telefono, direccion FROM proveedores WHERE activo = 1 ORDER BY nombreProveedor ASC")
         return result;
     } catch (error) {
-        console.error("Error al obtener Proveedores Select", error);
+        console.error("Error al obtener los proveedores", error);
         throw error;
     }
 }
@@ -37,7 +37,7 @@ export const editProvider = async (idProveedor, nombreProveedor, telefono = "", 
         console.log('Edición completa del proveedor');
         return result.changes; 
     } catch (error) {
-        console.error("Error al actualizar el proveedor", error); // Mensaje corregido
+        console.error("Error al actualizar el proveedor", error);
         throw error;
     }
 }
@@ -45,11 +45,11 @@ export const editProvider = async (idProveedor, nombreProveedor, telefono = "", 
 export const deleteProvider = async (idProveedor) => {
     const db = await openDatabase();
     try {
-        // Esto ya usaba 'runAsync', así que está perfecto
         const result = await db.runAsync("UPDATE proveedores SET activo = 0 WHERE idProveedor = ?", [idProveedor]);
+        console.log('Proveedor eliminado correctamente');
         return result.changes;
     } catch (error) {
-        console.error("Error al eliminar el proveedor", error) // Mensaje corregido
+        console.error("Error al eliminar el proveedor", error) 
         throw error;
     }
 }

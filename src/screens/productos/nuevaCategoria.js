@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert} from "react-native";
 import Layout from "../layout";
-import GlobalButton from "../../components/buttton";
+import GlobalButton from "../../components/button";
 import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles";
 import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
 import { useNavigation } from "@react-navigation/native";

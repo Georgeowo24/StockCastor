@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import Layout from "../layout";
-import GlobalButton from "../../components/buttton";
-import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles";
+import GlobalButton from "../../components/button";
 import { useNavigation } from "@react-navigation/native";
 import { useProvidersViewModel } from "../../ViewModels/providersViewModel";
-
+import InputForm from "../../components/inputForm";
 
 export default function NuevoProveedor() {
     const navigation = useNavigation();
@@ -40,18 +39,18 @@ export default function NuevoProveedor() {
     return (
         <Layout titulo={'Nuevo Proveedor'}>
             {/* //? Nombre del proveedor */}
-            <Text style={GLOBAL_STYLES.subtitle}>Nombre del proveedor</Text>
-            <TextInput
-                style={styles.input}
+            <InputForm
+                label="Nombre del proveedor"
+                iconName="person-outline"
                 placeholder="Juan J."
                 value={formData.nombreProveedor}
                 onChangeText={(text) => handleChange("nombreProveedor", text)}
             />
-            
-            {/* //? Stock actual */}
-            <Text style={GLOBAL_STYLES.subtitle}>Telefono</Text>
-            <TextInput
-                style={styles.input}
+
+            {/* //? Teléfono */}
+            <InputForm
+                label="Teléfono"
+                iconName="call-outline"
                 placeholder="222 222 2222"
                 keyboardType="numeric"
                 value={formData.telefono}
@@ -59,13 +58,15 @@ export default function NuevoProveedor() {
                 onChangeText={(text) => handleChange("telefono", text)}
             />
 
-            {/* //? Dirección del proveedor */}
-            <Text style={GLOBAL_STYLES.subtitle}>Dirección</Text>
-            <TextInput
-                style={styles.input}
+            {/* //? Dirección */}
+            <InputForm
+                label="Dirección"
+                iconName="location-outline"
                 placeholder="Calle X, Col. Bosques, #00000"
                 value={formData.direccion}
                 onChangeText={(text) => handleChange("direccion", text)}
+                multiline={true}
+                numberOfLines={3}
             />
 
 
@@ -79,14 +80,3 @@ export default function NuevoProveedor() {
         </Layout>
     );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.gray,
-    borderRadius: 10,
-    padding: SIZES.small,
-    marginBottom: 10,
-  },
-});

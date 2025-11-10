@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, ActivityIndicator } from "react-native";
 import Layout from "../layout";
 import { GLOBAL_STYLES } from "../../styles/globalStyles";
 import CategoriasProductos from "../../components/productos/categoriasProductos";
-import GlobalButton from "../../components/buttton";
+import GlobalButton from "../../components/button";
 import { useProductViewModel } from "../../ViewModels/productViewModel";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -36,20 +36,11 @@ export default function ProductosScreen() {
         <Layout titulo="Productos">
             <Text style = {GLOBAL_STYLES.text}>Consulta y administra tu inventario.</Text>
 
-            <View style={styles.container}>
-                <GlobalButton
-                    text={'Añadir Proveedor'}
-                    screen={'NuevoProveedor'}
-                    style={{ flex: 1, marginHorizontal: 6 }}
-                    color="success1"
-                />
-                <GlobalButton
-                    text={'Añadir Categoria'}
-                    screen={'NuevaCategoria'}
-                    style={{ flex: 1, marginHorizontal: 6 }}
-                    color="warning1"
-                />
-            </View>
+            <GlobalButton
+                text={'Añadir Categoria'}
+                screen={'NuevaCategoria'}
+                color="warning1"
+            />
 
             <GlobalButton
                 text={'Añadir Producto'}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Layout from "../layout";
-import GlobalButton from "../../components/buttton"; 
+import GlobalButton from "../../components/button"; 
 import { COLORS, SIZES, GLOBAL_STYLES } from "../../styles/globalStyles"; 
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker';

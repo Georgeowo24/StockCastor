@@ -7,6 +7,7 @@ export const COLORS = {
     green: '#34C759',
     text: '#111827',
     gray: '#6B7280',
+    darkGray: '#393b40ff',
     white: '#FFFFFF',
     warning1: '#FF9500',
     warning2: '#FFF9E6',
@@ -21,7 +22,8 @@ export const SIZES = {
     small: 12,
     medium: 16,
     large: 18,
-    xlarge: 30,
+    xlarge: 25,
+    xxlarge: 30,
 };
 
 export const FONTS = {
@@ -35,11 +37,18 @@ export const FONTS = {
     title: {
         fontFamily: 'System',
         fontWeight: '700',
-        fontSize: SIZES.xlarge,
+        fontSize: SIZES.xxlarge,
         color: COLORS.text,
         marginBottom: 5,
     },
     subtitle: {
+        fontFamily: 'System',
+        fontSize: SIZES.xlarge,
+        color: COLORS.text,
+        marginBottom: 5,
+        fontWeight: 'bold',
+    },
+    subtitle2: {
         fontFamily: 'System',
         fontSize: SIZES.large,
         color: COLORS.text,
@@ -56,6 +65,7 @@ export const FONTS = {
 export const GLOBAL_STYLES = StyleSheet.create({
     title: FONTS.title,
     subtitle: FONTS.subtitle,
+    subtitle2: FONTS.subtitle2,
     textS: FONTS.sMedium,
     text: FONTS.regular,
     textButtonWhite: FONTS.buttonWhite
