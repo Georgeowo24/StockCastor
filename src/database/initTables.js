@@ -29,7 +29,7 @@ async function createTables(db) {
         //? Tabla de Categorías
         `CREATE TABLE IF NOT EXISTS categorias (
             idCategoria INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombreCategoria TEXT NOT NULL UNIQUE,
+            nombreCategoria TEXT NOT NULL,
             descripcion TEXT,
             activa INTEGER DEFAULT 1,
             idTipoMedida INTEGER,

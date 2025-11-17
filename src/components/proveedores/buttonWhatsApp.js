@@ -3,7 +3,8 @@ import { StyleSheet, Linking, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
 const openWhatsApp = (phoneNumber) => {
-  const url = `whatsapp://send?phone=${phoneNumber}`;
+  // const url = `whatsapp://send?phone=${phoneNumber}`;
+  const url = `https://wa.me/${phoneNumber}`;
 
   Linking.canOpenURL(url)
     .then((supported) => {

@@ -1,14 +1,42 @@
 import { openDatabase } from "../database/openDB";
 
-export const addCategory = async (nombreCategoria, descripcion = "") => {
+export const checkCategoryExists = async (nombreCategoria) => {
+    const db = await openDatabase();
+    try {
+        const result = await db.getFirstAsync(
+            "SELECT 1 FROM categorias WHERE nombreCategoria = ? COLLATE NOCASE AND activa = 1", 
+            [nombreCategoria]
+        );
+        return !!result;
+    } catch (error) {
+        console.error("Error al verificar si la categoria ya existe", error);
+        throw error;
+    }
+}
+
+export const checkCategoryExistsForEdit = async (idCategoria, nombreCategoria) => {
+    const db = await openDatabase();
+    try {
+        const result = await db.getFirstAsync(
+            "SELECT 1 FROM categorias WHERE nombreCategoria = ? COLLATE NOCASE AND activa = 1 AND idCategoria != ?",
+            [nombreCategoria, idCategoria]
+        );
+        return !!result;
+    } catch (error) {
+        console.error("Error al verificar duplicados al editar", error);
+        throw error;
+    }
+}
+
+export const addCategory = async (nombreCategoria, descripcion = "", idTipoMedida) => {
     const db = await openDatabase();
     try {
         const result = await db.runAsync(
-            "INSERT INTO categorias( nombreCategoria, descripcion) VALUES(?,?)",
-            [nombreCategoria, descripcion]
+            "INSERT INTO categorias( nombreCategoria, descripcion, idTipoMedida) VALUES(?, ?, ?)",
+            [nombreCategoria, descripcion, idTipoMedida]
         );
-        
-        console.log('Creando nueva categoria');
+
+        console.log('Nueva categoria añadida');
         return result.lastInsertRowId; 
     } catch (error) {
         console.error("Error al crear la categoría", error);
@@ -16,26 +44,39 @@ export const addCategory = async (nombreCategoria, descripcion = "") => {
     }
 }
 
-export const getSelectCategory = async ()=>{
+export const getSelectCategories = async ()=>{
     const db = await openDatabase();
     try {
         const result = await db.getAllAsync("SELECT idCategoria, nombreCategoria from categorias WHERE activa = 1")
         return result;
     } catch (error) {
-        console.error("Error al obtener Categorias Select",error);
+        console.error("Error al obtener Categorias",error);
         throw error;
     }
 }
 
-export const editCategory = async (idCategoria,nombreCategoria,descripcion)=>{
+export const getSelectInfoCategory = async (idCategoria)=>{
     const db = await openDatabase();
     try {
-        const result = await db.withTransactionAsync(async (tx)=>{
-            return await tx.executeSqlAsync("UPDATE  categorias SET nombreCategoria = ?,descripcion = ? WHERE idCategoria = ?",
-                [nombreCategoria,descripcion,idCategoria]
-            );
-        });
-        console.log('Edición completa de la categoria');
+        const result = await db.getFirstAsync(
+            "SELECT idCategoria, nombreCategoria, descripcion, idTipoMedida FROM categorias WHERE activa = 1 AND idCategoria = ?",
+            [idCategoria]
+        )
+        return result;
+    } catch (error) {
+        console.error("Error al obtener información de la categorias",error);
+        throw error;
+    }
+}
+
+export const editCategory = async (idCategoria, nombreCategoria, descripcion, idTipoMedida )=>{
+    const db = await openDatabase();
+    try {
+        const result = await db.runAsync(
+            "UPDATE  categorias SET nombreCategoria = ?, descripcion = ?, idTipoMedida = ? WHERE idCategoria = ?",
+            [nombreCategoria, descripcion, idTipoMedida, idCategoria]
+        );
+        console.log('Categoria actualizada correctamente');
         return result.changes;
     } catch (error) {
         console.error("Error al actualizar la categoría",error);
@@ -46,7 +87,8 @@ export const editCategory = async (idCategoria,nombreCategoria,descripcion)=>{
 export const deleteCategory = async (idCategoria) =>{
     const db = await openDatabase();
     try {
-        const result = await db.runAsync("UPDATE categorias SET activo = 0 WHERE idCategoria = ?",[idCategoria]);
+        const result = await db.runAsync("UPDATE categorias SET activa = 0 WHERE idCategoria = ?",[idCategoria]);
+        console.log("Holiwis");
         return result.changes;
     } catch (error) {
         console.error("Error al eliminar la categoria",error)

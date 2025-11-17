@@ -1,48 +1,23 @@
 import { openDatabase } from "../database/openDB";
 
-export const addMeasure = async (idCategoria, medida) => {
+export const getSelectTypeMeasure = async () => {
     const db = await openDatabase();
     try {
-        const result = await db.runAsync(
-            "INSERT INTO medidas(idCategoria, medida) VALUES(?, ?)",
-            [idCategoria, medida]
-        );
-        
-        console.log('Creando nueva medida');
-        return result.lastInsertRowId; 
-    } catch (error) {
-        console.error("Error al crear la medida", error);
-        throw error;
-    }
-}
-
-
-export const getSelectMeasures = async (idCategoria) => {
-    const db = await openDatabase();
-    try {
-        const result = await db.getAllAsync(
-            "SELECT idMedida, medida FROM medidas WHERE idCategoria = ?",
-            [idCategoria]
-        );
+        const result =  await db.getAllAsync( "SELECT * FROM tiposMedidas" );
         return result;
-    } catch (error) {
-        console.error("Error al obtener Medidas Select", error);
+    } catch ( error ) {
+        console.error('Error al mostrar los tipos de medidas', error);
         throw error;
     }
 }
 
-
-export const editMeasure = async (idMedida, medida) => {
+export const getSelectMeasuresByType = async (idTipoMedida) => {
     const db = await openDatabase();
     try {
-        const result = await db.runAsync(
-            "UPDATE medidas SET medida = ? WHERE idMedida = ?",
-            [medida, idMedida]
-        );
-        console.log('Edición completa de la medida');
-        return result.changes;
-    } catch (error) {
-        console.error("Error al actualizar la medida", error);
+        const result =  await db.getAllAsync( "SELECT * FROM medidas WHERE idTipoMedida = ?", [idTipoMedida] );
+        return result;
+    } catch ( error ) {
+        console.error('Error al mostrar los tipos de medidas', error);
         throw error;
     }
 }

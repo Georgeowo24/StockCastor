@@ -79,7 +79,7 @@ export default function ProveedoresScreen () {
                 data={providers}
                 renderItem={renderProviderCard}
                 keyExtractor={(item) => item.idProveedor.toString()}
-                contentContainerStyle={{ paddingBottom: 180 }}
+                contentContainerStyle={{ paddingTop: 20, paddingBottom: 180 }}
                 showsVerticalScrollIndicator={false}
 
                 ListEmptyComponent={

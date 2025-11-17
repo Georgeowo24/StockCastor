@@ -16,6 +16,7 @@ import ProveedoresStack from './src/screens/navigation/proveedoresStack';
 import ProductosStack from './src/screens/navigation/productosStack';
 import VentasStack from './src/screens/navigation/ventasStack';
 import ApartadosStack from './src/screens/navigation/apartadosStack';
+import CategoriasStack from './src/screens/navigation/categoriasStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -97,7 +98,7 @@ export default function App() {
               let iconName;
               if (route.name === 'Inicio') iconName = focused ? 'home' : 'home-outline';
               else if (route.name === 'Proveedores') iconName = focused ? 'people' : 'people-outline';
-              else if (route.name === 'Productos') iconName = focused ? 'pricetag' : 'pricetag-outline';
+              else if (route.name === 'Categorias') iconName = focused ? 'pricetag' : 'pricetag-outline';
               else if (route.name === 'Ventas') iconName = focused ? 'cart' : 'cart-outline';
               else if (route.name === 'Apartados') iconName = focused ? 'bookmark' : 'bookmark-outline';
               return <Ionicons name={iconName} size={focused ? 30 : 28} color={COLORS.primary} />;
@@ -106,7 +107,7 @@ export default function App() {
         >
           <Tab.Screen name="Inicio" component={InicioScreen} />
           <Tab.Screen name="Proveedores" component={ProveedoresStack} />
-          <Tab.Screen name="Productos" component={ProductosStack} />
+          <Tab.Screen name="Categorias" component={CategoriasStack} />
           <Tab.Screen name="Ventas" component={VentasStack} />
           <Tab.Screen name="Apartados" component={ApartadosStack} />
         </Tab.Navigator>
