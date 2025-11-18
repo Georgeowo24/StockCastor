@@ -67,7 +67,8 @@ export const useCategoriesViewModel = () => {
             await CategoriesRepository.addCategory(
                 categoryInfo.nombreCategoria,
                 categoryInfo.descripcion,
-                categoryInfo.idTipoMedida
+                categoryInfo.idTipoMedida,
+                categoryInfo.icono
             );
 
             await loadCategories();
@@ -105,7 +106,8 @@ export const useCategoriesViewModel = () => {
                 categoryInfo.idCategoria,
                 categoryInfo.nombreCategoria,
                 categoryInfo.descripcion,
-                categoryInfo.idTipoMedida
+                categoryInfo.idTipoMedida,
+                categoryInfo.icono
             );
             await loadCategories();
             return true;

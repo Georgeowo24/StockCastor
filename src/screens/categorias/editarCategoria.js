@@ -9,30 +9,28 @@ import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
 import InputForm from "../../components/inputForm";
 import { useMeasuresViewModel } from "../../ViewModels/measuresViewModel";
 import MeasureList from "../../components/medidas/measureList";
+import IconSelector from "../../components/categorias/iconSelector";
 
 
 export default function EditarCategoria() {
     const navigation = useNavigation();
-    const route = useRoute(); // 1. Obtenemos la ruta
-    const { category } = route.params; // Obtenemos el objeto 'category' que pasamos
+    const route = useRoute();
+    const { category } = route.params;
 
-    // 3. Obtenemos 'handleEditCategory' del ViewModel
     const { handleEditCategory, error } = useCategoriesViewModel();
     const { measureTypes, isLoading: isLoadingMeasures } = useMeasuresViewModel();
 
-    // 2. Inicializamos el estado con los datos de la categoría
     const [formData, setFormData] = useState({
         nombreCategoria: category.nombreCategoria || "",
         descripcion: category.descripcion || "",
+        icono:  category.icono || "shirt-outline"
     });
 
     const [open, setOpen] = useState(false);
-    // 2. Inicializamos el valor seleccionado del dropdown
     const [selectedValue, setSelectedValue] = useState(category.idTipoMedida); 
     const [items, setItems] = useState([]);
 
     
-    // Este useEffect para poblar el dropdown se mantiene igual
     useEffect(() => {
         if (measureTypes) {
             const formattedItems = measureTypes.map((type) => ({
@@ -43,12 +41,14 @@ export default function EditarCategoria() {
         }
     }, [measureTypes]);
 
-    // Esta función se mantiene igual
+    const handleIconSelect = (iconName) => {
+        setFormData({ ...formData, icono: iconName });
+    };
+
     const handleChange = (key, value) => {
         setFormData({ ...formData, [key]: value });
     };
 
-    // 3. Cambiamos 'handleSave' por 'handleUpdate'
     const handleUpdate = async () => {
         if (!formData.nombreCategoria.trim()) {
             Alert.alert("Error", "El nombre de la categoría es obligatorio");
@@ -61,32 +61,29 @@ export default function EditarCategoria() {
         }
 
         try {
-            // Llamamos a la función de editar, pasando también el ID
             const success = await handleEditCategory({
-                idCategoria: category.idCategoria, // ¡Importante!
+                idCategoria: category.idCategoria,
                 nombreCategoria: formData.nombreCategoria.trim(),
                 descripcion: formData.descripcion.trim(),
                 idTipoMedida: selectedValue,
+                icono: formData.icono
             });
 
             if ( success ) {
                 Alert.alert("Éxito", "Categoria actualizada correctamente", [
-                   // Regresamos a la pantalla de Info (que se actualizará sola)
                    { text: "OK", onPress: () => navigation.goBack() } 
                 ]);
             }
-            // El error se mostrará automáticamente por el 'error' del ViewModel
         } catch (e) {
             Alert.alert("Error", e.message || "No se pudo actualizar la categoría");
         }
     };
 
     return (
-        // Cambiamos el título del Layout
         <Layout titulo={"Editar Categoría"}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 
-                {/* Los inputs ya están bindeados al 'formData' inicializado */}
+                {/* //? Nombre de la categoría */}
                 <InputForm
                     label="Nombre:"
                     iconName="pricetag-outline"
@@ -95,6 +92,7 @@ export default function EditarCategoria() {
                     onChangeText={(text) => handleChange("nombreCategoria", text)} 
                 />
 
+                {/* //? Descripción */}
                 <InputForm
                     label="Descripción:"
                     iconName="reader-outline"
@@ -103,7 +101,13 @@ export default function EditarCategoria() {
                     onChangeText={(text) => handleChange("descripcion", text)}
                 />
 
-                {/* El dropdown ya está bindeado al 'selectedValue' inicializado */}
+                {/* //? Selector de Iconos */}
+                <IconSelector 
+                    selectedIcon={formData.icono}
+                    onSelect={handleIconSelect}
+                />
+
+                {/* //? Dropdown de Tipo de Medida */}
                 <DropdownForm
                     label="Tipo de Medida"
                     iconName="scale-outline"
@@ -122,10 +126,10 @@ export default function EditarCategoria() {
                     listMode="SCROLLVIEW"
                 />
 
+                {/* //? Medidas */}
                 <MeasureList idTipoMedida={ selectedValue }/>
 
                 
-                {/* Cambiamos el texto y el handler del botón */}
                 <View style={{ marginTop: 20, zIndex: 1 }}>
                     <GlobalButton
                         text={"Guardar Cambios"}
@@ -144,7 +148,6 @@ export default function EditarCategoria() {
     );
 }
 
-// Los estilos son idénticos a los de nuevaCategoria.js
 const styles = StyleSheet.create({
   input: {
     backgroundColor: COLORS.white,

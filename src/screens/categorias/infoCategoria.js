@@ -81,7 +81,26 @@ export default function InfoCategoria () {
 
 
     return (
-        <LayoutSinScroll titulo={currentCategory.nombreCategoria}>
+        <LayoutSinScroll>
+                <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                    <View style={{ 
+                        width: 80, 
+                        height: 80, 
+                        borderRadius: 40, 
+                        backgroundColor: COLORS.secondary + '20',
+                        justifyContent: 'center', 
+                        alignItems: 'center' 
+                    }}>
+                        <Ionicons 
+                            name={currentCategory.icono || "shirt-outline"} 
+                            size={40} 
+                            color={COLORS.primary} 
+                        />
+                    </View>
+                    
+                    <Text style={GLOBAL_STYLES.title}>{currentCategory.nombreCategoria}</Text>
+                </View>
+
                 <Text style={GLOBAL_STYLES.text}>{ currentCategory.descripcion }</Text>
 
                 <View style={styles.buttonsRow}>

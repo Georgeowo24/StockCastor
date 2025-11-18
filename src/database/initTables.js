@@ -31,6 +31,7 @@ async function createTables(db) {
             idCategoria INTEGER PRIMARY KEY AUTOINCREMENT,
             nombreCategoria TEXT NOT NULL,
             descripcion TEXT,
+            icono TEXT,
             activa INTEGER DEFAULT 1,
             idTipoMedida INTEGER,
             FOREIGN KEY (idTipoMedida) REFERENCES tiposMedidas (idTipoMedida) ON DELETE SET NULL

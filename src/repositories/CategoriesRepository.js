@@ -28,12 +28,12 @@ export const checkCategoryExistsForEdit = async (idCategoria, nombreCategoria) =
     }
 }
 
-export const addCategory = async (nombreCategoria, descripcion = "", idTipoMedida) => {
+export const addCategory = async (nombreCategoria, descripcion = "", idTipoMedida, icono) => {
     const db = await openDatabase();
     try {
         const result = await db.runAsync(
-            "INSERT INTO categorias( nombreCategoria, descripcion, idTipoMedida) VALUES(?, ?, ?)",
-            [nombreCategoria, descripcion, idTipoMedida]
+            "INSERT INTO categorias( nombreCategoria, descripcion, idTipoMedida, icono) VALUES(?, ?, ?, ?)",
+            [nombreCategoria, descripcion, idTipoMedida, icono]
         );
 
         console.log('Nueva categoria añadida');
@@ -47,7 +47,7 @@ export const addCategory = async (nombreCategoria, descripcion = "", idTipoMedid
 export const getSelectCategories = async ()=>{
     const db = await openDatabase();
     try {
-        const result = await db.getAllAsync("SELECT idCategoria, nombreCategoria from categorias WHERE activa = 1")
+        const result = await db.getAllAsync("SELECT idCategoria, nombreCategoria, icono FROM categorias WHERE activa = 1")
         return result;
     } catch (error) {
         console.error("Error al obtener Categorias",error);
@@ -59,7 +59,7 @@ export const getSelectInfoCategory = async (idCategoria)=>{
     const db = await openDatabase();
     try {
         const result = await db.getFirstAsync(
-            "SELECT idCategoria, nombreCategoria, descripcion, idTipoMedida FROM categorias WHERE activa = 1 AND idCategoria = ?",
+            "SELECT idCategoria, nombreCategoria, descripcion, idTipoMedida, icono FROM categorias WHERE activa = 1 AND idCategoria = ?",
             [idCategoria]
         )
         return result;
@@ -69,12 +69,12 @@ export const getSelectInfoCategory = async (idCategoria)=>{
     }
 }
 
-export const editCategory = async (idCategoria, nombreCategoria, descripcion, idTipoMedida )=>{
+export const editCategory = async (idCategoria, nombreCategoria, descripcion, idTipoMedida, icono )=>{
     const db = await openDatabase();
     try {
         const result = await db.runAsync(
-            "UPDATE  categorias SET nombreCategoria = ?, descripcion = ?, idTipoMedida = ? WHERE idCategoria = ?",
-            [nombreCategoria, descripcion, idTipoMedida, idCategoria]
+            "UPDATE  categorias SET nombreCategoria = ?, descripcion = ?, idTipoMedida = ?, icono = ? WHERE idCategoria = ?",
+            [nombreCategoria, descripcion, idTipoMedida, icono, idCategoria]
         );
         console.log('Categoria actualizada correctamente');
         return result.changes;

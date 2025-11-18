@@ -29,7 +29,6 @@ export default function CategoriasScreen() {
         />
     );
 
-    // Muestra un indicador de carga
     if (isLoading) {
         return (
             <LayoutSinScroll titulo="Proveedores">
@@ -38,7 +37,6 @@ export default function CategoriasScreen() {
         );
     }
 
-    // Muestra un mensaje de error si algo falló
     if (error) {
         return (
             <LayoutSinScroll titulo="Proveedores">

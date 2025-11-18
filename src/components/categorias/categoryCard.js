@@ -4,12 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../styles/globalStyles';
 
 const CategoryCard = ({ item, onPress }) => {
+    const iconName = item.icono || "pricetag-outline";
+
     return (
         <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
             
             <View style={styles.leftContent}>
                 <Ionicons 
-                    name="pricetag-outline" 
+                    name={iconName}
                     size={22} 
                     color={COLORS.primary} 
                 />

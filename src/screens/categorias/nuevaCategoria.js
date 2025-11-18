@@ -9,7 +9,7 @@ import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
 import InputForm from "../../components/inputForm";
 import { useMeasuresViewModel } from "../../ViewModels/measuresViewModel";
 import MeasureList from "../../components/medidas/measureList";
-
+import IconSelector from "../../components/categorias/iconSelector";
 
 export default function NuevaCategoria() {
     const navigation = useNavigation();
@@ -19,6 +19,7 @@ export default function NuevaCategoria() {
     const [formData, setFormData] = useState({
         nombreCategoria: "",
         descripcion: "",
+        icono: "shirt-outline"
     });
 
     const [open, setOpen] = useState(false);
@@ -35,6 +36,10 @@ export default function NuevaCategoria() {
             setItems(formattedItems);
         }
     }, [measureTypes]);
+
+    const handleIconSelect = (iconName) => {
+        setFormData({ ...formData, icono: iconName });
+    };
 
     const handleChange = (key, value) => {
         setFormData({ ...formData, [key]: value });
@@ -56,6 +61,7 @@ export default function NuevaCategoria() {
                 nombreCategoria: formData.nombreCategoria.trim(),
                 descripcion: formData.descripcion.trim(),
                 idTipoMedida: selectedValue,
+                icono: formData.icono
             });
 
             if ( success ) {
@@ -90,6 +96,12 @@ export default function NuevaCategoria() {
                     onChangeText={(text) => handleChange("descripcion", text)}
                 />
 
+                {/* //? Selector de Iconos */}
+                <IconSelector 
+                    selectedIcon={formData.icono}
+                    onSelect={handleIconSelect}
+                />
+
                 {/* //? Dropdown de Tipo de Medida */}
                 <DropdownForm
                     label="Tipo de Medida"
@@ -109,6 +121,7 @@ export default function NuevaCategoria() {
                     listMode="SCROLLVIEW"
                 />
 
+                {/* //? Medidas */}
                 <MeasureList idTipoMedida={ selectedValue }/>
 
                 
