@@ -5,7 +5,7 @@ import { COLORS, SIZES } from '../../styles/globalStyles';
 
 const CategoryCard = ({ item, onPress }) => {
     const iconName = item.icono || "pricetag-outline";
-
+    
     return (
         <TouchableOpacity onPress={onPress} style={styles.cardContainer}>
             
@@ -28,7 +28,6 @@ const CategoryCard = ({ item, onPress }) => {
     );
 };
 
-// --- Estilos ---
 const styles = StyleSheet.create({
     cardContainer: {
         flexDirection: 'row',

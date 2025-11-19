@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Linking } from "react-native";
 import Layout from "./layout";
-import { GLOBAL_STYLES, SIZES } from "../styles/globalStyles";
+import { GLOBAL_STYLES, SIZES, COLORS } from "../styles/globalStyles";
 
 // Componentes
 import { AlertaStock } from "../components/Inicio/alertaStock";
@@ -39,6 +39,20 @@ export default function InicioScreen() {
 
                 <ProductoEstrella nombre="Omnitrix" unidades={80}/>
             </View>
+
+            
+            <Text 
+                style={[
+                    GLOBAL_STYLES.text,
+                    { color: 'gray', textDecorationLine: 'underline', textAlign: 'center', marginVertical: 20 }
+                ]}
+                onPress={() => {
+                    Linking.openURL('https://cr1shb.github.io/aviso_privacidad_StockCastor')
+                }}
+            >
+                Politica de Privacidad
+            </Text>
+            
         </Layout>
     );
 }

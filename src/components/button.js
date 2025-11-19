@@ -22,12 +22,10 @@ export default function GlobalButton({ text, screen, onPress, style, color = "pr
             onPress={handlePress}
         >
             <View style={styles.content}>
-                {/* Ícono a la izquierda */}
                 {icon && (
                     <View>{icon}</View>
                 )}
 
-                {/* Texto */}
                 {text && (
                     <Text style={GLOBAL_STYLES.textButtonWhite}>{text}</Text>
                 )}

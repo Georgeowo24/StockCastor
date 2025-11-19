@@ -8,8 +8,9 @@ export default function CardProductos({ nombre, precio, stock, imagen }) {
             <Image source={{ uri: imagen }} style={styles.image} />
 
             <View style={styles.infoContainer}>
-                <Text style={styles.nombre}>{nombre}</Text>
+                <Text style={styles.nombre} numberOfLines={1}>{nombre}</Text>
                 <Text style={styles.precio}>${precio.toFixed(2)}</Text>
+                
                 <View
                     style={[
                         styles.stockContainer,
@@ -22,7 +23,7 @@ export default function CardProductos({ nombre, precio, stock, imagen }) {
                         { color: stock > 0 ? COLORS.warning1 : COLORS.danger1 },
                         ]}
                     >
-                        {stock > 0 ? `Stock: ${stock}` : "Sin stock"}
+                        {stock > 0 ? `Stock: ${stock}` : "Agotado"}
                     </Text>
                 </View>
             </View>
@@ -33,50 +34,49 @@ export default function CardProductos({ nombre, precio, stock, imagen }) {
 const styles = StyleSheet.create({
     card: {
         backgroundColor: COLORS.white,
-        borderRadius: 20,
-        marginRight: 20,
-        height: "300",
+        borderRadius: 15, // Reduje un poco el radio
+        width: '100%',    // IMPORTANTE: Ahora ocupa todo el ancho que le de el padre
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
+        shadowOpacity: 0.1,
         shadowRadius: 3,
         elevation: 3,
-        padding: 10,
+        padding: 8,       // Reduje un poco el padding interno
+        marginBottom: 5,  // Margen inferior interno pequeño
     },
     image: {
-        width: 220,
-        height: 190,
+        width: "100%",    // IMPORTANTE: Se adapta al ancho de la card
+        height: 120,      // Reduje la altura (antes 190) para que no se vea gigante
         resizeMode: "cover",
-        marginBottom: 10,
-        borderRadius: 12,
+        marginBottom: 8,
+        borderRadius: 10,
     },
     infoContainer: {
         width: "100%",
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
     },
     nombre: {
         ...FONTS.subtitle,
-        fontSize: SIZES.medium,
+        fontSize: 14,     // Letra un poco más pequeña
         marginBottom: 4,
         textAlign: "left",
     },
     precio: {
         color: COLORS.primary,
-        fontSize: SIZES.large,
-        fontWeight: "600",
+        fontSize: 16,
+        fontWeight: "700",
         marginBottom: 6,
         textAlign: "left",
     },
     stockContainer: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderRadius: 6,
-        alignSelf: "flex-end",
+        alignSelf: "flex-start", // Cambié a flex-start para que se alinee a la izq
     },
     stockText: {
-        fontSize: SIZES.sMedium,
+        fontSize: 10, // Letra más pequeña para el stock
         fontWeight: "600",
-        textAlign: "right",
     },
 });

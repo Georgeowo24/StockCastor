@@ -11,16 +11,13 @@ export const useProductViewModel = () => {
     const [error, setError] = useState(null);
     const [selectedImageUri, setSelectedImageUri] = useState(null);
 
-    // Nuevo estado para las medidas
     const [measures, setMeasures] = useState([]);
     const [isLoadingMeasures, setIsLoadingMeasures] = useState(false);
 
-    // Cargar productos al iniciar
     useEffect(() => {
         loadAllProductsByCategory();
     }, []);
 
-    // Nueva función para cargar medidas basadas en la categoría
     const loadMeasuresForCategory = async (idCategoria) => {
         if (!idCategoria) {
             setMeasures([]);
@@ -29,7 +26,7 @@ export const useProductViewModel = () => {
         setIsLoadingMeasures(true);
         setError(null);
         try {
-            const data = await MeasuresRepository.getSelectMeasures(idCategoria)
+            const data = await MeasuresRepository.getSelectMeasuresByCategory(idCategoria)
             setMeasures(data);
         } catch (e) {
             setError(e.message);
@@ -38,7 +35,6 @@ export const useProductViewModel = () => {
         }
     };
 
-    // Lógica de negocios: Cargar productos
     const loadAllProducts = async () => {
         setIsLoading(true);
         setError(null);
@@ -122,9 +118,9 @@ export const useProductViewModel = () => {
         }
 
         if (
-            !infoProduct.idCategoria || !infoProduct.nombreProducto || !infoProduct.descripcion 
-            || infoProduct.precioCompra < 0 || infoProduct.precioVenta < 0 || infoProduct.stockActual < 0 
-            || infoProduct.stockMinimo < 0 || !infoProduct.idMedida
+            !infoProduct.idCategoria || !infoProduct.nombreProducto || infoProduct.precioCompra < 0 
+            || infoProduct.precioVenta < 0 || infoProduct.stockActual < 0 || infoProduct.stockMinimo < 0 
+            || !infoProduct.idMedida
         ) {
             setError('Datos inválidos');
             console.log('HoliwisError');
@@ -185,7 +181,7 @@ export const useProductViewModel = () => {
     // Lógica de negocios: Eliminar un producto
     const handleDeleteProduct = async (id) => {
         try {
-            await ProductRepository.deleteProduct(id);
+            await ProductRepository.DeleteProduct(id);
             await loadAllProducts(); // Recargar la lista
         } catch (e) {
             setError(e.message);
