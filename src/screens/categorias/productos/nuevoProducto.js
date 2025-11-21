@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         borderWidth: 1,
         borderColor: COLORS.gray,
-        borderStyle: 'dashed', // Estilo punteado para indicar zona de carga
+        borderStyle: 'dashed',
         borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
@@ -286,13 +286,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    // Estilos para las filas de inputs
     rowContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        // No agregamos marginBottom aquí porque InputForm ya tiene margin
     },
     inputWrapper: {
-        flex: 1, // Permite que cada input tome el 50% del espacio
+        flex: 1,
     }
 });

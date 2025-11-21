@@ -19,11 +19,10 @@ import { useProvidersViewModel } from "../../../ViewModels/providersViewModel";
 export default function EditarProducto() {
     const navigation = useNavigation();
     const route = useRoute();
-    // Recibimos el objeto producto completo desde la navegación
     const { product } = route.params; 
 
     const { 
-        handleEditProduct, // Usamos la función de editar
+        handleEditProduct,
         pickImage, 
         selectedImageUri, 
         setSelectedImageUri, 
@@ -35,27 +34,24 @@ export default function EditarProducto() {
 
     const { providers, isLoading: isLoadingProviders } = useProvidersViewModel();
 
-    // 1. Inicializar el estado con los datos del producto existente
     const [formData, setFormData] = useState({
         nombreProducto: product.nombreProducto,
         descripcion: product.descripcion,
-        // Convertimos a string para los inputs
         precioCompra: product.precioCompra?.toString(),
         precioVenta: product.precioVenta?.toString(),
         stockActual: product.stockActual?.toString(),
         stockMinimo: product.stockMinimo?.toString(),
     });
 
-    // Estados para Dropdowns (Inicializados con los IDs del producto)
     const [openProvider, setOpenProvider] = useState(false);
     const [selectedProvider, setSelectedProvider] = useState(product.idProveedor);
     const [providerItems, setProviderItems] = useState([]);
-
+    
     const [openMeasure, setOpenMeasure] = useState(false);
     const [selectedMeasure, setSelectedMeasure] = useState(product.idMedida);
     const [measureItems, setMeasureItems] = useState([]);
 
-    // Cargar la imagen existente al montar
+    // Cargar la imagen existente
     useEffect(() => {
         if (product.imagen) {
             setSelectedImageUri(product.imagen);
@@ -104,16 +100,14 @@ export default function EditarProducto() {
     }, []);
     
     const handleSave = async () => {
-        // Validaciones básicas
         if (!formData.nombreProducto || !formData.precioVenta) {
             Alert.alert("Error", "El nombre y precio de venta son obligatorios.");
             return;
         }
 
-        // Construir objeto actualizado
         const updatedProductData = {
-            idProducto: product.idProducto, // ¡IMPORTANTE! ID para el WHERE
-            idCategoria: product.idCategoria, // Mantenemos la misma categoría
+            idProducto: product.idProducto,
+            idCategoria: product.idCategoria, 
             idProveedor: selectedProvider,
             idMedida: selectedMeasure,
             nombreProducto: formData.nombreProducto,

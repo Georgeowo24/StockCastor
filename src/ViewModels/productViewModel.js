@@ -108,7 +108,6 @@ export const useProductViewModel = () => {
         }
     };
 
-    // Lógica de negocios: Añadir un nuevo producto
     const handleAddProduct = async (infoProduct) => {
         let permanentUrl = null; 
 
@@ -134,7 +133,7 @@ export const useProductViewModel = () => {
                 infoProduct.stockActual,infoProduct.stockMinimo,infoProduct.idMedida
             );
             setSelectedImageUri(null);
-            await loadAllProducts(); // Recargar la lista (Implementa Observer )
+            await loadAllProducts();
             console.log('HoliwisAñadido');
         } catch (e) {
             setError(e.message);
@@ -172,23 +171,21 @@ export const useProductViewModel = () => {
                 infoProduct.stockActual,infoProduct.stockMinimo,infoProduct.idMedida
             );
             setSelectedImageUri(null);
-            await loadAllProducts(); // Recargar la lista (Implementa Observer )
+            await loadAllProducts();
         } catch (e) {
             setError(e.message);
         }
     };
 
-    // Lógica de negocios: Eliminar un producto
     const handleDeleteProduct = async (id) => {
         try {
             await ProductRepository.DeleteProduct(id);
-            await loadAllProducts(); // Recargar la lista
+            await loadAllProducts(); 
         } catch (e) {
             setError(e.message);
         }
     };
 
-    // El ViewModel expone el estado y las funciones a la Vista
     return {
         // Estado
         products,

@@ -13,10 +13,10 @@ import { SetupDatabase, DropDatabase } from './src/database/setupDatabase';
 //* Pantallas principales
 import InicioScreen from './src/screens/inicio';
 import ProveedoresStack from './src/screens/navigation/proveedoresStack';
-import ProductosStack from './src/screens/navigation/productosStack';
 import VentasStack from './src/screens/navigation/ventasStack';
 import ApartadosStack from './src/screens/navigation/apartadosStack';
 import CategoriasStack from './src/screens/navigation/categoriasStack';
+import Proximamente from './src/screens/proximamente';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,7 +42,7 @@ export default function App() {
     SetupDatabaseAppJS();
   }, []);
 
-  // Mostramos 'Loading' mientras la BD se inicializa
+
   if (status === 'loading') {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
@@ -52,7 +52,6 @@ export default function App() {
     );
   }
 
-  // Mostramos un error si falla
   if (status === 'error') {
       return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
@@ -108,8 +107,8 @@ export default function App() {
           <Tab.Screen name="Inicio" component={InicioScreen} />
           <Tab.Screen name="Proveedores" component={ProveedoresStack} />
           <Tab.Screen name="Categorias" component={CategoriasStack} />
-          <Tab.Screen name="Ventas" component={VentasStack} />
-          <Tab.Screen name="Apartados" component={ApartadosStack} />
+          <Tab.Screen name="Ventas" component={Proximamente} />
+          <Tab.Screen name="Apartados" component={Proximamente} />
         </Tab.Navigator>
       </NavigationContainer>
     </View>

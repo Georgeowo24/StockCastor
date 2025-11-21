@@ -48,7 +48,6 @@ export default function InfoProducto() {
         <Layout titulo="Detalles">
             <ScrollView showsVerticalScrollIndicator={false}>
                 
-                {/* 1. Imagen Principal */}
                 <View style={styles.imageContainer}>
                     {product.imagen ? (
                         <Image source={{ uri: product.imagen }} style={styles.image} />
@@ -60,7 +59,6 @@ export default function InfoProducto() {
                     )}
                 </View>
 
-                {/* 2. Encabezado: Nombre y Precio */}
                 <View style={styles.headerSection}>
                     <Text style={styles.title}>{product.nombreProducto}</Text>
                     <Text style={styles.price}>${product.precioVenta?.toFixed(2)}</Text>
@@ -93,7 +91,6 @@ export default function InfoProducto() {
 
                 <View style={styles.divider} />
 
-                {/* 4. Detalles e Información */}
                 <Text style={styles.sectionTitle}>Descripción</Text>
                 <Text style={styles.description}>
                     {product.descripcion || "Sin descripción disponible para este producto."}
@@ -104,11 +101,10 @@ export default function InfoProducto() {
                     <Text style={styles.detailValue}>${product.precioCompra?.toFixed(2)}</Text>
                 </View>
                 
-                {/* Aquí podrías agregar más detalles como Proveedor si haces el JOIN en la BD */}
 
                 <View style={{ height: 30 }} />
 
-                {/* 5. Botones de Acción */}
+                
                 <View style={styles.buttonsRow}>
                     <GlobalButton
                         onPress={onEdit}
@@ -206,7 +202,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 20,
-        marginLeft: 'auto' // Empuja a la derecha
+        marginLeft: 'auto'
     },
     alertText: {
         color: COLORS.warning1,

@@ -4,45 +4,32 @@ import { GLOBAL_STYLES, COLORS, SIZES } from "../../styles/globalStyles";
 import GlobalButton from "../../components/button";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useCategoriesViewModel } from "../../ViewModels/categoriesViewModel";
-import { useProductViewModel } from "../../ViewModels/productViewModel"; // 1. Importar ViewModel de productos
+import { useProductViewModel } from "../../ViewModels/productViewModel"; 
 import LayoutSinScroll from "../layoutSinScroll";
 import { Ionicons } from "@expo/vector-icons";
-import CardProductos from "../../components/productos/cardProductos"; // 2. Importar tu Card (ajusta la ruta si es necesario)
+import CardProductos from "../../components/productos/cardProductos"; 
 
 export default function InfoCategoria () {
     const navigation = useNavigation();
     const route = useRoute();
     const { categoryId } = route.params; 
 
-    // ViewModel de Categorías
-    const { 
-        currentCategory, 
-        isLoading: isLoadingCategory, 
-        error: errorCategory, 
-        loadCategoryDetails, 
-        handleDeleteCategory 
-    } = useCategoriesViewModel();
+    const { currentCategory, isLoading: isLoadingCategory, error: errorCategory, loadCategoryDetails, handleDeleteCategory } = useCategoriesViewModel();
+    const { products, loadAllProducts, isLoading: isLoadingProducts } = useProductViewModel();
 
-    // 3. ViewModel de Productos
-    const { 
-        products, 
-        loadAllProducts, 
-        isLoading: isLoadingProducts 
-    } = useProductViewModel();
-
-    // Estado local para productos filtrados
+    
     const [categoryProducts, setCategoryProducts] = useState([]);
 
     useFocusEffect(
         useCallback(() => {
             if (categoryId) {
                 loadCategoryDetails(categoryId);
-                loadAllProducts(); // Cargar todos los productos al enfocar
+                loadAllProducts(); 
             }
         }, [categoryId])
     );
 
-    // 4. Efecto para filtrar productos cuando cambie la lista o la categoría
+    // Efecto para filtrar productos cuando cambie la lista o la categoría
     useEffect(() => {
         if (products && categoryId) {
             const filtered = products.filter(p => p.idCategoria === categoryId);
@@ -73,11 +60,10 @@ export default function InfoCategoria () {
         navigation.navigate('EditarCategoria', { category: currentCategory });
     };
 
-    // Renderizado de items para la lista
     const renderProductItem = ({ item }) => (
         <TouchableOpacity 
             style={{ 
-                width: '48%',   // Casi la mitad de la pantalla
+                width: '48%',
                 marginBottom: 15 
             }}
             onPress={() => navigation.navigate('InfoProducto', { product: item })}
@@ -91,7 +77,6 @@ export default function InfoCategoria () {
         </TouchableOpacity>
     );
 
-    // Manejo de cargas y errores iniciales (Solo si no hay categoría)
     if (isLoadingCategory && !currentCategory) {
         return (
             <LayoutSinScroll titulo="Cargando...">
@@ -111,7 +96,6 @@ export default function InfoCategoria () {
 
     return (
         <LayoutSinScroll>
-            {/* Cabecera de la Categoría */}
             <View style={{ alignItems: 'center', marginVertical: 0 }}>
                 <View style={styles.iconContainer}>
                     <Ionicons 
@@ -152,7 +136,7 @@ export default function InfoCategoria () {
                 })}
             />
 
-            {/* 5. Lista de Productos */}
+            {/* //? Lista de Productos */}
             <View style={styles.productsSection}>
                 <Text style={[GLOBAL_STYLES.subtitle, { marginBottom: 10 }]}>
                     Productos ({categoryProducts.length})
@@ -211,7 +195,7 @@ const styles = StyleSheet.create({
     },
     productsSection: {
         marginTop: 20,
-        flex: 1, // Importante para que ocupe el resto del espacio
+        flex: 1, 
         width: '100%'
     }
 });

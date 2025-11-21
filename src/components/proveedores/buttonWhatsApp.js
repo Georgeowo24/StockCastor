@@ -3,18 +3,12 @@ import { StyleSheet, Linking, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
 const openWhatsApp = (phoneNumber) => {
-  // const url = `whatsapp://send?phone=${phoneNumber}`;
   const url = `https://wa.me/${phoneNumber}`;
-
-  Linking.canOpenURL(url)
-    .then((supported) => {
-      if (!supported) {
-        Alert.alert("Error", "WhatsApp no está instalado en este dispositivo");
-      } else {
-        return Linking.openURL(url);
-      }
-    })
-    .catch((err) => console.error("Error al abrir WhatsApp:", err));
+  
+  Linking.openURL(url).catch((err) => {
+    console.error("Error al abrir el navegador:", err);
+    Alert.alert("Error", "No se pudo abrir el enlace.");
+  });
 };
 
 export default function ButtonWhatsApp({ telefono }) {
